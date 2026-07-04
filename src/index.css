@@ -149,7 +149,6 @@ section[id] {
 
   .tilt-card {
     position: relative;
-    transform-style: preserve-3d;
   }
   /* Only hint the compositor while actually tilting — a permanent
      will-change promotes every card to its own layer and stutters scroll. */

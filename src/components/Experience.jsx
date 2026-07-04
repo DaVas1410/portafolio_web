@@ -48,8 +48,7 @@ export default function Experience() {
   const { lang } = useLang()
   const revealRef = useReveal()
   return (
-    <section id="experience" className="section-tint">
-      <div className="section-pad">
+    <section id="experience" className="section-pad">
       <SectionHeader index="04" eyebrow={experience.eyebrow} title={experience.title} />
 
       <div ref={revealRef} className="reveal relative">
@@ -101,7 +100,6 @@ export default function Experience() {
             <DiversaCard key={c.slug} c={c} lang={lang} />
           ))}
         </div>
-      </div>
       </div>
     </section>
   )
