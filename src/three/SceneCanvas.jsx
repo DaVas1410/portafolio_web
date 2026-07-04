@@ -1,5 +1,7 @@
 import { Suspense, lazy, useEffect, useRef, useState } from 'react'
 import { useMotion } from '../context/MotionContext.jsx'
+import { useScroll } from '../context/ScrollContext.jsx'
+import { useTheme } from '../context/ThemeContext.jsx'
 import StaticBackdrop from './StaticBackdrop.jsx'
 
 const Canvas = lazy(() => import('@react-three/fiber').then((m) => ({ default: m.Canvas })))
@@ -7,6 +9,10 @@ const ParticleLattice = lazy(() => import('./ParticleLattice.jsx'))
 
 export default function SceneCanvas() {
   const { reduced } = useMotion()
+  // Read context OUTSIDE the R3F <Canvas> — React context does not cross the
+  // fiber reconciler boundary, so scene values must be passed in as props.
+  const { progressRef, activeSection } = useScroll()
+  const { theme } = useTheme()
   const wrapRef = useRef(null)
   const [visible, setVisible] = useState(true)
 
@@ -30,7 +36,12 @@ export default function SceneCanvas() {
           camera={{ position: [0, 0, 6], fov: 60 }}
           frameloop={visible ? 'always' : 'never'}
         >
-          <ParticleLattice mobile={isMobile} />
+          <ParticleLattice
+            mobile={isMobile}
+            progressRef={progressRef}
+            activeSection={activeSection}
+            theme={theme}
+          />
         </Canvas>
       </Suspense>
     </div>
