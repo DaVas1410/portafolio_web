@@ -58,7 +58,11 @@ const VERT = /* glsl */ `
     vec3 drift = flow(aChaos, uTime * 0.3) * (1.0 - uEase);
     vec3 pos = mix(aChaos + drift, aTarget, uEase);
     vec4 mv = modelViewMatrix * vec4(pos, 1.0);
-    gl_PointSize = uSize * (uScale / -mv.z);
+    // Guard the perspective divide: particles that drift near or behind the
+    // camera plane would otherwise blow gl_PointSize up to a screen-filling
+    // quad, and with additive blending that overdraw tanks the frame rate.
+    float depth = max(-mv.z, 0.6);
+    gl_PointSize = min(uSize * (uScale / depth), 24.0);
     gl_Position = projectionMatrix * mv;
   }
 `
