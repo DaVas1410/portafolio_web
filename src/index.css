@@ -10,14 +10,14 @@
 */
 :root {
   --bg: 244 241 233;         /* warm cream */
-  --bg-elev: 253 251 245;
-  --surface: 253 251 245;
+  --bg-elev: 249 245 236;    /* warm off-white, not stark white */
+  --surface: 249 245 236;
   --border: 224 218 205;
-  --text: 40 37 32;          /* warm near-black */
-  --text-muted: 96 89 78;
-  --text-faint: 144 135 121;
-  --accent: 190 85 55;       /* terracotta orange, deepened for AA on cream */
-  --accent-warm: 79 118 85;  /* clearer forest/sage green */
+  --text: 38 35 30;          /* warm near-black */
+  --text-muted: 84 77 66;    /* darker for crisper contrast on cream */
+  --text-faint: 116 107 94;  /* lifted to ~4.4:1 on cream (was ~3.1) */
+  --accent: 172 72 44;       /* deeper terracotta — ~5:1 on cream, passes AA */
+  --accent-warm: 63 104 71;  /* deeper forest/sage green for AA */
   --grid: 40 37 32;          /* hairline grid tint */
 }
 
@@ -132,6 +132,10 @@ section[id] {
   .tilt-card {
     position: relative;
     transform-style: preserve-3d;
+  }
+  /* Only hint the compositor while actually tilting — a permanent
+     will-change promotes every card to its own layer and stutters scroll. */
+  .tilt-card:hover {
     will-change: transform;
   }
   .tilt-card::after {
