@@ -13,7 +13,7 @@ export default function Research() {
     <section id="research" className="relative overflow-hidden">
       {/* subtle contour-like band to set this section apart */}
       <div className="absolute inset-0 grid-backdrop opacity-40" />
-      <div className="relative section-pad">
+      <div className="relative section-pad pt-12 md:pt-16">
         <SectionHeader
           index="03"
           eyebrow={research.eyebrow}

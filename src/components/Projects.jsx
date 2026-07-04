@@ -13,13 +13,13 @@ function ProjectCard({ p, lang }) {
   const revealRef = useReveal()
   const featured = p.featured
   return (
-    <TiltCard className={`reveal rounded-2xl ${featured ? 'md:col-span-2' : ''}`}>
+    <TiltCard className={`rounded-2xl ${featured ? 'md:col-span-2' : ''}`}>
       <a
         ref={revealRef}
         href={p.repo}
         target="_blank"
         rel="noreferrer"
-        className={`group relative flex h-full overflow-hidden rounded-2xl border border-line bg-elev transition-colors duration-300 ${a.hoverBorder} ${
+        className={`reveal group relative flex h-full overflow-hidden rounded-2xl border border-line bg-elev transition-colors duration-300 ${a.hoverBorder} ${
           featured ? 'flex-col md:flex-row' : 'flex-col'
         }`}
       >
@@ -81,7 +81,7 @@ function ProjectCard({ p, lang }) {
 export default function Projects() {
   const { lang } = useLang()
   return (
-    <section id="projects" className="section-pad">
+    <section id="projects" className="section-pad pb-10 md:pb-12">
       <SectionHeader
         index="02"
         eyebrow={projectsSection.eyebrow}
