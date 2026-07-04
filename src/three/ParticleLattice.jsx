@@ -14,6 +14,8 @@ function cssColor(name) {
 }
 
 // Cheap pseudo-curl flow: offset a point by trig of its own coords + time.
+// Mirrors the GLSL `flow()` in the vertex shader so CPU-side edge endpoints
+// stay glued to their GPU-animated particles.
 function flow(x, y, z, t) {
   return [
     Math.sin(y * 0.7 + t) * 0.15 + Math.cos(z * 0.5 + t * 0.7) * 0.12,
@@ -31,13 +33,60 @@ function gauss() {
   return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v)
 }
 
+// GPU does the chaos→target morph + curl flow per vertex, so the main thread
+// never touches per-particle positions. Only uTime / uEase change per frame.
+const VERT = /* glsl */ `
+  attribute vec3 aChaos;
+  attribute vec3 aTarget;
+  attribute vec3 aColor;
+  uniform float uTime;
+  uniform float uEase;
+  uniform float uScale;
+  uniform float uSize;
+  varying vec3 vColor;
+
+  vec3 flow(vec3 p, float t) {
+    return vec3(
+      sin(p.y * 0.7 + t) * 0.15 + cos(p.z * 0.5 + t * 0.7) * 0.12,
+      sin(p.z * 0.6 + t * 1.1) * 0.15 + cos(p.x * 0.4 + t) * 0.12,
+      sin(p.x * 0.5 + t * 0.9) * 0.15 + cos(p.y * 0.6 + t) * 0.12
+    );
+  }
+
+  void main() {
+    vColor = aColor;
+    vec3 drift = flow(aChaos, uTime * 0.3) * (1.0 - uEase);
+    vec3 pos = mix(aChaos + drift, aTarget, uEase);
+    vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+    gl_PointSize = uSize * (uScale / -mv.z);
+    gl_Position = projectionMatrix * mv;
+  }
+`
+
+// Soft round falloff — glowing node, not a hard square "snowflake".
+const FRAG = /* glsl */ `
+  uniform float uOpacity;
+  varying vec3 vColor;
+  void main() {
+    float d = length(gl_PointCoord - 0.5);
+    if (d > 0.5) discard;
+    float a = smoothstep(0.5, 0.05, d);
+    gl_FragColor = vec4(vColor, a * uOpacity);
+  }
+`
+
 export default function ParticleLattice({ mobile, progressRef, activeSection, theme }) {
   const groupRef = useRef()
   const pointsRef = useRef()
   const linesRef = useRef()
   const lineMatRef = useRef()
+  const matRef = useRef()
 
   const COUNT = mobile ? 3500 : 10000
+  // Additive glow reads well on the dark charcoal, but washes out to invisible
+  // on the cream light theme — there we composite normally as colored dots.
+  const dark = theme === 'dark'
+  const blend = dark ? THREE.AdditiveBlending : THREE.NormalBlending
 
   // Build clusters, chaos cloud, per-particle cluster-target positions, the
   // color buffer, and (desktop only) precomputed retrieval edges — all once.
@@ -117,11 +166,26 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
       }
     }
 
-    const positions = new Float32Array(chaos) // live buffer (starts at chaos)
     const edgePositions = new Float32Array(edgePairs.length * 3)
 
-    return { chaos, target, colors, clusterOf, positions, edgePairs, edgePositions }
+    return { chaos, target, colors, clusterOf, edgePairs, edgePositions }
   }, [COUNT, mobile])
+
+  const uniforms = useMemo(
+    () => ({
+      uTime: { value: 0 },
+      uEase: { value: 0 },
+      uScale: { value: 500 },
+      uSize: { value: mobile ? 0.05 : 0.04 },
+      uOpacity: { value: 0.72 },
+    }),
+    [mobile],
+  )
+
+  // Colored dots over cream need more presence than an additive glow.
+  useEffect(() => {
+    if (matRef.current) matRef.current.uniforms.uOpacity.value = dark ? 0.72 : 0.85
+  }, [dark])
 
   // Recolor per-cluster from the theme palette — once per theme change, not per
   // frame (avoids getComputedStyle forcing layout every tick).
@@ -140,7 +204,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
       colors[i * 3 + 2] = col.b
     }
     const geo = pointsRef.current?.geometry
-    if (geo?.attributes.color) geo.attributes.color.needsUpdate = true
+    if (geo?.attributes.aColor) geo.attributes.aColor.needsUpdate = true
     if (lineMatRef.current) lineMatRef.current.color.copy(teal.clone().lerp(warm, 0.5))
   }, [theme, built])
 
@@ -148,29 +212,27 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
     const t = state.clock.elapsedTime
     const p = progressRef?.current ?? 0
     const ease = p * p * (3 - 2 * p) // smoothstep
-    const { chaos, target, positions, edgePairs, edgePositions } = built
 
-    const geo = pointsRef.current.geometry
-    const arr = geo.attributes.position.array
-    for (let i = 0; i < positions.length; i += 3) {
-      const [fx, fy, fz] = flow(chaos[i], chaos[i + 1], chaos[i + 2], t * 0.3)
-      arr[i] = THREE.MathUtils.lerp(chaos[i] + fx * (1 - ease), target[i], ease)
-      arr[i + 1] = THREE.MathUtils.lerp(chaos[i + 1] + fy * (1 - ease), target[i + 1], ease)
-      arr[i + 2] = THREE.MathUtils.lerp(chaos[i + 2] + fz * (1 - ease), target[i + 2], ease)
+    // O(1) per-frame cost: the GPU vertex shader morphs every particle.
+    if (matRef.current) {
+      const u = matRef.current.uniforms
+      u.uTime.value = t
+      u.uEase.value = ease
+      // sizeAttenuation scale — match three's point-size projection to px height.
+      u.uScale.value = state.size.height * state.gl.getPixelRatio() * 0.5
     }
-    geo.attributes.position.needsUpdate = true
 
-    // Retrieval edges follow the live particle positions; fade in as the cloud
-    // settles into clusters, with a gentle pulse.
+    // Retrieval edges follow the same morph, computed only for their endpoints.
+    const { chaos, target, edgePairs, edgePositions } = built
     if (edgePairs.length && linesRef.current) {
       for (let e = 0; e < edgePairs.length; e++) {
-        const src = edgePairs[e] * 3
-        edgePositions[e * 3] = arr[src]
-        edgePositions[e * 3 + 1] = arr[src + 1]
-        edgePositions[e * 3 + 2] = arr[src + 2]
+        const i = edgePairs[e] * 3
+        const [fx, fy, fz] = flow(chaos[i], chaos[i + 1], chaos[i + 2], t * 0.3)
+        edgePositions[e * 3] = THREE.MathUtils.lerp(chaos[i] + fx * (1 - ease), target[i], ease)
+        edgePositions[e * 3 + 1] = THREE.MathUtils.lerp(chaos[i + 1] + fy * (1 - ease), target[i + 1], ease)
+        edgePositions[e * 3 + 2] = THREE.MathUtils.lerp(chaos[i + 2] + fz * (1 - ease), target[i + 2], ease)
       }
-      const lgeo = linesRef.current.geometry
-      lgeo.attributes.position.needsUpdate = true
+      linesRef.current.geometry.attributes.position.needsUpdate = true
       if (lineMatRef.current) {
         const pulse = 0.55 + 0.45 * Math.sin(t * 1.4)
         lineMatRef.current.opacity = ease * ease * 0.3 * pulse
@@ -194,19 +256,21 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
 
   return (
     <group ref={groupRef}>
-      <points ref={pointsRef}>
+      <points ref={pointsRef} frustumCulled={false}>
         <bufferGeometry>
-          <bufferAttribute attach="attributes-position" count={COUNT} array={built.positions} itemSize={3} />
-          <bufferAttribute attach="attributes-color" count={COUNT} array={built.colors} itemSize={3} />
+          <bufferAttribute attach="attributes-position" count={COUNT} array={built.chaos} itemSize={3} />
+          <bufferAttribute attach="attributes-aChaos" count={COUNT} array={built.chaos} itemSize={3} />
+          <bufferAttribute attach="attributes-aTarget" count={COUNT} array={built.target} itemSize={3} />
+          <bufferAttribute attach="attributes-aColor" count={COUNT} array={built.colors} itemSize={3} />
         </bufferGeometry>
-        <pointsMaterial
-          vertexColors
-          size={mobile ? 0.03 : 0.024}
-          sizeAttenuation
+        <shaderMaterial
+          ref={matRef}
+          uniforms={uniforms}
+          vertexShader={VERT}
+          fragmentShader={FRAG}
           transparent
-          opacity={0.7}
           depthWrite={false}
-          blending={THREE.AdditiveBlending}
+          blending={blend}
         />
       </points>
 
@@ -225,7 +289,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
             transparent
             opacity={0}
             depthWrite={false}
-            blending={THREE.AdditiveBlending}
+            blending={blend}
           />
         </lineSegments>
       )}

@@ -3,35 +3,35 @@
 @tailwind utilities;
 
 /*
-  Color system — a diverging scientific palette (cool teal/plasma <-> warm
-  amber/stellar) over blue-tinted slate neutrals evoking the interstellar
-  medium. Values are space-separated RGB triplets consumed by tailwind's
-  `rgb(var(--x) / <alpha>)` color definitions.
+  Color system — a warm "Claude" palette: terracotta orange <-> brownie olive
+  green diverging accents over cream / warm-neutral backgrounds. Light is the
+  default; dark is a warm charcoal, not pure black. Values are space-separated
+  RGB triplets consumed by tailwind's `rgb(var(--x) / <alpha>)` colors.
 */
 :root {
-  --bg: 246 248 251;
-  --bg-elev: 255 255 255;
-  --surface: 255 255 255;
-  --border: 224 230 240;
-  --text: 15 26 38;
-  --text-muted: 78 92 110;
-  --text-faint: 130 144 162;
-  --accent: 13 148 164;      /* teal, deepened for AA contrast on light */
-  --accent-warm: 176 112 22; /* amber, deepened for light */
-  --grid: 15 26 38;          /* hairline grid tint */
+  --bg: 244 241 233;         /* warm cream */
+  --bg-elev: 253 251 245;
+  --surface: 253 251 245;
+  --border: 224 218 205;
+  --text: 40 37 32;          /* warm near-black */
+  --text-muted: 96 89 78;
+  --text-faint: 144 135 121;
+  --accent: 190 85 55;       /* terracotta orange, deepened for AA on cream */
+  --accent-warm: 110 112 66; /* brownie olive green */
+  --grid: 40 37 32;          /* hairline grid tint */
 }
 
 .dark {
-  --bg: 9 13 20;
-  --bg-elev: 16 23 33;
-  --surface: 19 27 39;
-  --border: 34 45 60;
-  --text: 228 235 243;
-  --text-muted: 141 154 171;
-  --text-faint: 92 104 121;
-  --accent: 45 212 226;      /* bright plasma teal for dark */
-  --accent-warm: 243 183 92; /* warm stellar amber for dark */
-  --grid: 148 163 184;
+  --bg: 30 28 25;            /* warm charcoal, not black */
+  --bg-elev: 40 37 33;
+  --surface: 45 42 37;
+  --border: 62 57 49;
+  --text: 237 233 224;
+  --text-muted: 170 162 149;
+  --text-faint: 114 107 96;
+  --accent: 224 130 96;      /* brighter terracotta for dark */
+  --accent-warm: 176 179 122;/* soft sage / olive for dark */
+  --grid: 150 143 130;
 }
 
 html {

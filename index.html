@@ -10,18 +10,15 @@
     <meta property="og:description" content="Where physics meets data and AI. Fractal turbulence, orbital dynamics, RAG agents and more." />
     <meta property="og:type" content="website" />
 
-    <!-- Prevent theme flash: set the class before paint from stored preference. -->
+    <!-- Prevent theme flash: warm-cream light is the default; only go dark on an
+         explicit stored preference. -->
     <script>
       (function () {
         try {
-          var t = localStorage.getItem('theme');
-          if (t === 'light') return;
-          if (t === 'dark' || window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          if (localStorage.getItem('theme') === 'dark') {
             document.documentElement.classList.add('dark');
           }
-        } catch (e) {
-          document.documentElement.classList.add('dark');
-        }
+        } catch (e) {}
       })();
     </script>
 
