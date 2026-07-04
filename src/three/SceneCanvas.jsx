@@ -15,10 +15,10 @@ export default function SceneCanvas() {
   const { theme } = useTheme()
   const wrapRef = useRef(null)
   const [visible, setVisible] = useState(true)
-  // Normalized pointer (-1..1), tracked on window because the canvas is
-  // pointer-events-none (content sits on top). `active` gates the particle
-  // repulsion so it only kicks in once the user actually moves the mouse.
-  const pointerRef = useRef({ x: 0, y: 0, active: false })
+  // Interaction state, tracked on window because the canvas is
+  // pointer-events-none (content sits on top). x/y drive parallax; yaw/pitch
+  // are the drag-orbit offsets; dragging gates it all.
+  const pointerRef = useRef({ x: 0, y: 0, active: false, yaw: 0, pitch: 0, dragging: false })
 
   // Pause rendering when the (fixed, full-screen) canvas' host tab is hidden.
   useEffect(() => {
@@ -28,21 +28,56 @@ export default function SceneCanvas() {
   }, [])
 
   useEffect(() => {
+    const p = pointerRef.current
+    let lastX = 0
+    let lastY = 0
+    // Don't start an orbit drag on interactive content — keep clicks working.
+    const INTERACTIVE = 'a, button, input, textarea, select, label, [role="button"]'
+
+    const onDown = (e) => {
+      // Mouse only (leave touch for scrolling) and primary button only.
+      if (e.pointerType !== 'mouse' || e.button !== 0) return
+      if (e.target.closest && e.target.closest(INTERACTIVE)) return
+      p.dragging = true
+      lastX = e.clientX
+      lastY = e.clientY
+      document.body.style.userSelect = 'none'
+      document.body.style.cursor = 'grabbing'
+    }
     const onMove = (e) => {
-      pointerRef.current.x = (e.clientX / window.innerWidth) * 2 - 1
-      pointerRef.current.y = -((e.clientY / window.innerHeight) * 2 - 1)
-      pointerRef.current.active = true
+      p.x = (e.clientX / window.innerWidth) * 2 - 1
+      p.y = -((e.clientY / window.innerHeight) * 2 - 1)
+      p.active = true
+      if (p.dragging) {
+        p.yaw += (e.clientX - lastX) * 0.005
+        p.pitch = Math.max(-1.2, Math.min(1.2, p.pitch + (e.clientY - lastY) * 0.005))
+        lastX = e.clientX
+        lastY = e.clientY
+      }
+    }
+    const onUp = () => {
+      if (!p.dragging) return
+      p.dragging = false
+      document.body.style.userSelect = ''
+      document.body.style.cursor = ''
     }
     const onLeave = () => {
-      pointerRef.current.active = false
+      p.active = false
     }
+
+    window.addEventListener('pointerdown', onDown)
     window.addEventListener('pointermove', onMove, { passive: true })
-    window.addEventListener('pointerdown', onMove, { passive: true })
+    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onUp)
     document.addEventListener('mouseleave', onLeave)
     return () => {
+      window.removeEventListener('pointerdown', onDown)
       window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerdown', onMove)
+      window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointercancel', onUp)
       document.removeEventListener('mouseleave', onLeave)
+      document.body.style.userSelect = ''
+      document.body.style.cursor = ''
     }
   }, [])
 

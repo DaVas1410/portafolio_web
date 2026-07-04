@@ -2,9 +2,6 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
-// Scratch vector reused each frame to unproject the cursor (avoids per-frame allocation).
-const MOUSE_NDC = new THREE.Vector3()
-
 const CLUSTERS = 6
 const K = 5 // retrieval neighbors per query
 const QUERIES_PER_CLUSTER = 4 // several query nodes per cluster → denser graph
@@ -49,9 +46,6 @@ const VERT = /* glsl */ `
   uniform float uEase;
   uniform float uScale;
   uniform float uSize;
-  uniform vec2 uMouse;
-  uniform float uMouseRadius;
-  uniform float uMousePush;
   varying vec3 vColor;
   varying float vFade;
 
@@ -67,14 +61,7 @@ const VERT = /* glsl */ `
     vColor = aColor;
     vec3 drift = flow(aChaos, uTime * 0.3) * (1.0 - uEase);
     vec3 pos = mix(aChaos + drift, aTarget, uEase);
-    // Mouse repulsion in world space (independent of group rotation & camera
-    // parallax): push particles away from the cursor with a smooth falloff.
-    vec4 world = modelMatrix * vec4(pos, 1.0);
-    vec2 toP = world.xy - uMouse;
-    float mdist = length(toP);
-    float mfall = smoothstep(uMouseRadius, 0.0, mdist);
-    world.xy += (mdist > 1e-4 ? toP / mdist : vec2(0.0)) * mfall * uMousePush;
-    vec4 mv = viewMatrix * world;
+    vec4 mv = modelViewMatrix * vec4(pos, 1.0);
     // Guard the perspective divide: particles that drift near or behind the
     // camera plane would otherwise blow gl_PointSize up to a screen-filling
     // quad, and with additive blending that overdraw tanks the frame rate.
@@ -204,9 +191,6 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
       uScale: { value: 500 },
       uSize: { value: mobile ? 0.085 : 0.065 },
       uOpacity: { value: 0.72 },
-      uMouse: { value: new THREE.Vector2(1e5, 1e5) },
-      uMouseRadius: { value: mobile ? 1.1 : 1.6 },
-      uMousePush: { value: mobile ? 0.5 : 0.9 },
     }),
     [mobile],
   )
@@ -281,40 +265,29 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
       }
     }
 
-    // Section-driven slow rotation of the whole embedding, so navigation feels
-    // like turning the space to a new topic region.
+    const it = pointerRef?.current
+
+    // Rotation = section target + slow idle drift + user drag orbit. Horizontal
+    // drag yaws (rotation.y), vertical drag pitches (rotation.x); the offsets
+    // persist after release so the view stays where you left it.
     if (groupRef.current) {
       const idx = Math.max(0, SECTION_ORDER.indexOf(activeSection))
-      // Section target + a slow continuous drift so the scene never fully
-      // settles into a frozen pose while idle.
-      const targetRot = (idx / (SECTION_ORDER.length - 1)) * Math.PI * 0.5 + t * 0.03
-      groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRot, 0.02)
+      const yaw = it?.yaw ?? 0
+      const pitch = it?.pitch ?? 0
+      const targetY = (idx / (SECTION_ORDER.length - 1)) * Math.PI * 0.5 + t * 0.03 + yaw
+      // Snappier while dragging for a direct "grab and turn" feel.
+      const k = it?.dragging ? 0.25 : 0.03
+      groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetY, k)
+      groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, pitch, k)
     }
 
-    // Gentle scroll-driven camera dolly.
+    // Gentle scroll-driven camera dolly + subtle pointer parallax (paused while
+    // dragging so the orbit reads cleanly).
     state.camera.position.z = THREE.MathUtils.lerp(7.5, 6, ease)
-
-    // Mouse: repulsion + parallax, driven by the window-tracked pointer.
-    const ptr = pointerRef?.current
-    if (matRef.current) {
-      const um = matRef.current.uniforms.uMouse.value
-      if (ptr?.active) {
-        // Unproject the pointer onto the world z=0 plane so the repulsion point
-        // sits exactly under the cursor regardless of parallax/rotation.
-        MOUSE_NDC.set(ptr.x, ptr.y, 0.5).unproject(state.camera).sub(state.camera.position)
-        const tHit = -state.camera.position.z / MOUSE_NDC.z
-        um.set(
-          state.camera.position.x + MOUSE_NDC.x * tHit,
-          state.camera.position.y + MOUSE_NDC.y * tHit,
-        )
-      } else {
-        um.set(1e5, 1e5) // parked offscreen — no push
-      }
-    }
-    const px = ptr?.active ? ptr.x : 0
-    const py = ptr?.active ? ptr.y : 0
-    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, px * 0.5, 0.03)
-    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, py * 0.35, 0.03)
+    const px = it?.active && !it?.dragging ? it.x : 0
+    const py = it?.active && !it?.dragging ? it.y : 0
+    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, px * 0.4, 0.03)
+    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, py * 0.3, 0.03)
     state.camera.lookAt(0, 0, 0)
   })
 
