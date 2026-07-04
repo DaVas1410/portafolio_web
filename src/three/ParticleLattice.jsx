@@ -4,7 +4,7 @@ import * as THREE from 'three'
 
 const CLUSTERS = 6
 const K = 4 // retrieval neighbors per query
-const QUERIES_PER_CLUSTER = 2 // fewer query nodes per cluster → lighter graph
+const QUERIES_PER_CLUSTER = 3 // query nodes per cluster; revealed progressively on scroll
 const SECTION_ORDER = ['about', 'projects', 'research', 'experience', 'skills', 'contact']
 
 // One distinct warm hue per cluster — a Claude-ish spread from terracotta
@@ -269,20 +269,25 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
         // tighten further down the page.
         lineMatRef.current.opacity = (0.05 + scrollEase * 0.4) * pulse
       }
+      // Grow the graph: reveal more edges the further down the page you are, so
+      // nodes gain connections toward the end. drawRange keeps the top cheap.
+      const segs = edgePairs.length / 2
+      const showSegs = Math.max(1, Math.floor(segs * (0.12 + 0.88 * scrollEase)))
+      linesRef.current.geometry.setDrawRange(0, showSegs * 2)
     }
 
     const it = pointerRef?.current
 
-    // Rotation = section target + slow idle drift + user drag orbit. Horizontal
-    // drag yaws (rotation.y), vertical drag pitches (rotation.x); the offsets
-    // persist after release so the view stays where you left it.
+    // Rotation = continuous scroll-driven yaw + slow idle drift + user drag
+    // orbit. Driving it off scroll *progress* (not discrete section jumps) with
+    // a tighter lerp keeps it tracking the scroll instead of lagging behind;
+    // the modest range keeps scrolling from heaving the whole view around.
     if (groupRef.current) {
-      const idx = Math.max(0, SECTION_ORDER.indexOf(activeSection))
       const yaw = it?.yaw ?? 0
       const pitch = it?.pitch ?? 0
-      const targetY = (idx / (SECTION_ORDER.length - 1)) * Math.PI * 0.5 + t * 0.03 + yaw
+      const targetY = p * Math.PI * 0.35 + t * 0.03 + yaw
       // Snappier while dragging for a direct "grab and turn" feel.
-      const k = it?.dragging ? 0.25 : 0.03
+      const k = it?.dragging ? 0.25 : 0.08
       groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetY, k)
       groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, pitch, k)
     }
