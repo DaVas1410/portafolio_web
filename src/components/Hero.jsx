@@ -1,10 +1,24 @@
+import { useEffect, useState } from 'react'
 import { useLang, t } from '../context/LangContext.jsx'
+import { useMotion } from '../context/MotionContext.jsx'
 import { hero, links } from '../data/content.js'
 import { GithubIcon, MailIcon, FileIcon, ArrowUpRight } from './Icons.jsx'
 import OrbitBackdrop from './OrbitBackdrop.jsx'
 
 export default function Hero() {
   const { lang } = useLang()
+  const { reduced } = useMotion()
+  const roles = hero.roles[lang]
+  const [ri, setRi] = useState(0)
+
+  useEffect(() => {
+    if (reduced) {
+      setRi(0)
+      return
+    }
+    const id = setInterval(() => setRi((i) => (i + 1) % roles.length), 2800)
+    return () => clearInterval(id)
+  }, [reduced, roles.length])
 
   return (
     <section id="top" className="relative flex min-h-[92vh] items-center overflow-hidden">
@@ -24,7 +38,9 @@ export default function Hero() {
           </h1>
 
           <p className="mt-5 font-mono text-base text-warm sm:text-lg animate-fade-up" style={{ animationDelay: '120ms' }}>
-            {t(hero.role, lang)}
+            <span key={ri} className={reduced ? '' : 'inline-block animate-fade-up'}>
+              {roles[ri] ?? t(hero.role, lang)}
+            </span>
           </p>
 
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl animate-fade-up" style={{ animationDelay: '180ms' }}>

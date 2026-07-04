@@ -26,6 +26,10 @@ export const hero = {
   greeting: { en: "Hi, I'm", es: 'Hola, soy' },
   name: 'Juan Vásconez',
   role: { en: 'Physics student & Data Scientist', es: 'Estudiante de física y Data Scientist' },
+  roles: {
+    en: ['Physics undergraduate', 'Data Scientist @ Diversa', 'AI for social & environmental good'],
+    es: ['Estudiante de física', 'Data Scientist @ Diversa', 'IA para el bien social y ambiental'],
+  },
   tagline: {
     en: 'I work where physics meets data and AI — from fractal turbulence in the interstellar medium to language models that serve real people.',
     es: 'Trabajo donde la física se encuentra con los datos y la IA — desde la turbulencia fractal del medio interestelar hasta modelos de lenguaje al servicio de personas reales.',
