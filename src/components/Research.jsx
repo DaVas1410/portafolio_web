@@ -1,10 +1,12 @@
 import { useLang, t } from '../context/LangContext.jsx'
 import { research } from '../data/content.js'
+import { useReveal } from '../hooks/useReveal.js'
 import SectionHeader from './SectionHeader.jsx'
 import { ArrowUpRight } from './Icons.jsx'
 
 export default function Research() {
   const { lang } = useLang()
+  const revealRef = useReveal()
   return (
     <section id="research" className="relative overflow-hidden">
       {/* subtle contour-like band to set this section apart */}
@@ -16,7 +18,7 @@ export default function Research() {
           title={research.title}
         />
 
-        <div className="grid gap-12 md:grid-cols-[1.5fr_1fr] md:gap-16">
+        <div ref={revealRef} className="reveal grid gap-12 md:grid-cols-[1.5fr_1fr] md:gap-16">
           <div>
             <p className="mb-6 inline-flex rounded-lg border border-line bg-elev px-3 py-1.5 font-mono text-xs text-warm">
               {t(research.supervisor, lang)}

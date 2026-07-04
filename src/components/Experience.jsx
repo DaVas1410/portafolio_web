@@ -1,15 +1,17 @@
 import { useLang, t } from '../context/LangContext.jsx'
 import { experience } from '../data/content.js'
+import { useReveal } from '../hooks/useReveal.js'
 import SectionHeader from './SectionHeader.jsx'
 import { pick } from './accentStyles.js'
 
 export default function Experience() {
   const { lang } = useLang()
+  const revealRef = useReveal()
   return (
     <section id="experience" className="section-pad">
       <SectionHeader index="04" eyebrow={experience.eyebrow} title={experience.title} />
 
-      <div className="relative">
+      <div ref={revealRef} className="reveal relative">
         {/* vertical timeline axis */}
         <span className="absolute left-0 top-2 hidden h-[calc(100%-1rem)] w-px bg-line sm:block" />
 

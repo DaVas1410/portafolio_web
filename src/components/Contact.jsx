@@ -1,10 +1,12 @@
 import { useLang, t } from '../context/LangContext.jsx'
 import { contact, links } from '../data/content.js'
+import { useReveal } from '../hooks/useReveal.js'
 import SectionHeader from './SectionHeader.jsx'
 import { GithubIcon, LinkedinIcon, MailIcon } from './Icons.jsx'
 
 export default function Contact() {
   const { lang } = useLang()
+  const revealRef = useReveal()
 
   const channels = [
     { icon: GithubIcon, label: 'GitHub', value: '@DaVas1410', href: links.github },
@@ -18,7 +20,7 @@ export default function Contact() {
       <div className="relative section-pad">
         <SectionHeader index="06" eyebrow={contact.eyebrow} title={contact.title} />
 
-        <div className="grid gap-10 md:grid-cols-[1.2fr_1fr] md:gap-16">
+        <div ref={revealRef} className="reveal grid gap-10 md:grid-cols-[1.2fr_1fr] md:gap-16">
           <div>
             <p className="max-w-xl text-lg leading-relaxed text-muted">
               {t(contact.body, lang)}

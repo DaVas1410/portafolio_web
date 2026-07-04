@@ -4,15 +4,18 @@ import { projectsSection, links } from '../data/content.js'
 import SectionHeader from './SectionHeader.jsx'
 import { GithubIcon, ArrowUpRight } from './Icons.jsx'
 import { pick } from './accentStyles.js'
+import { useReveal } from '../hooks/useReveal.js'
 
 function ProjectCard({ p, lang }) {
   const a = pick(p.accent)
+  const revealRef = useReveal()
   return (
     <a
+      ref={revealRef}
       href={p.repo}
       target="_blank"
       rel="noreferrer"
-      className={`group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-elev p-6 transition-all duration-300 hover:-translate-y-1 ${a.hoverBorder} ${
+      className={`reveal group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-elev p-6 transition-all duration-300 hover:-translate-y-1 ${a.hoverBorder} ${
         p.featured ? 'md:col-span-2' : ''
       }`}
     >
