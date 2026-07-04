@@ -1,23 +1,7 @@
-import { useTheme } from '../context/ThemeContext.jsx'
 import { useLang, t } from '../context/LangContext.jsx'
 import { useMotion } from '../context/MotionContext.jsx'
-import { SunIcon, MoonIcon, SparklesIcon, MotionOffIcon } from './Icons.jsx'
+import { SparklesIcon, MotionOffIcon } from './Icons.jsx'
 import { motionToggle } from '../data/content.js'
-
-export function ThemeToggle() {
-  const { theme, toggle } = useTheme()
-  const isDark = theme === 'dark'
-  return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-elev text-muted transition-colors hover:border-accent hover:text-accent"
-    >
-      {isDark ? <SunIcon width={17} height={17} /> : <MoonIcon width={17} height={17} />}
-    </button>
-  )
-}
 
 export function MotionToggle() {
   const { lang } = useLang()

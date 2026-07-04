@@ -1,34 +1,15 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect } from 'react'
 
 const ThemeContext = createContext(null)
 
-function getInitialTheme() {
-  if (typeof window === 'undefined') return 'light'
-  try {
-    const stored = localStorage.getItem('theme')
-    if (stored === 'light' || stored === 'dark') return stored
-    return 'light' // warm-cream light is the default look
-  } catch {
-    return 'light'
-  }
-}
-
+// Dark-only. The light theme was removed; this provider just guarantees the
+// `dark` class is present and reports a fixed theme to consumers (SceneCanvas).
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(getInitialTheme)
-
   useEffect(() => {
-    const root = document.documentElement
-    root.classList.toggle('dark', theme === 'dark')
-    try {
-      localStorage.setItem('theme', theme)
-    } catch {
-      /* storage unavailable — non-fatal */
-    }
-  }, [theme])
+    document.documentElement.classList.add('dark')
+  }, [])
 
-  const toggle = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
-
-  return <ThemeContext.Provider value={{ theme, toggle }}>{children}</ThemeContext.Provider>
+  return <ThemeContext.Provider value={{ theme: 'dark', toggle: () => {} }}>{children}</ThemeContext.Provider>
 }
 
 export function useTheme() {

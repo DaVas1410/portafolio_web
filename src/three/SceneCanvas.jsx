@@ -15,12 +15,35 @@ export default function SceneCanvas() {
   const { theme } = useTheme()
   const wrapRef = useRef(null)
   const [visible, setVisible] = useState(true)
+  // Normalized pointer (-1..1), tracked on window because the canvas is
+  // pointer-events-none (content sits on top). `active` gates the particle
+  // repulsion so it only kicks in once the user actually moves the mouse.
+  const pointerRef = useRef({ x: 0, y: 0, active: false })
 
   // Pause rendering when the (fixed, full-screen) canvas' host tab is hidden.
   useEffect(() => {
     const onVis = () => setVisible(!document.hidden)
     document.addEventListener('visibilitychange', onVis)
     return () => document.removeEventListener('visibilitychange', onVis)
+  }, [])
+
+  useEffect(() => {
+    const onMove = (e) => {
+      pointerRef.current.x = (e.clientX / window.innerWidth) * 2 - 1
+      pointerRef.current.y = -((e.clientY / window.innerHeight) * 2 - 1)
+      pointerRef.current.active = true
+    }
+    const onLeave = () => {
+      pointerRef.current.active = false
+    }
+    window.addEventListener('pointermove', onMove, { passive: true })
+    window.addEventListener('pointerdown', onMove, { passive: true })
+    document.addEventListener('mouseleave', onLeave)
+    return () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerdown', onMove)
+      document.removeEventListener('mouseleave', onLeave)
+    }
   }, [])
 
   if (reduced) return <StaticBackdrop />
@@ -41,6 +64,7 @@ export default function SceneCanvas() {
             progressRef={progressRef}
             activeSection={activeSection}
             theme={theme}
+            pointerRef={pointerRef}
           />
         </Canvas>
       </Suspense>

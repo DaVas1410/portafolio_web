@@ -2,6 +2,9 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
+// Scratch vector reused each frame to unproject the cursor (avoids per-frame allocation).
+const MOUSE_NDC = new THREE.Vector3()
+
 const CLUSTERS = 6
 const K = 5 // retrieval neighbors per query
 const QUERIES_PER_CLUSTER = 4 // several query nodes per cluster → denser graph
@@ -46,6 +49,9 @@ const VERT = /* glsl */ `
   uniform float uEase;
   uniform float uScale;
   uniform float uSize;
+  uniform vec2 uMouse;
+  uniform float uMouseRadius;
+  uniform float uMousePush;
   varying vec3 vColor;
   varying float vFade;
 
@@ -61,7 +67,14 @@ const VERT = /* glsl */ `
     vColor = aColor;
     vec3 drift = flow(aChaos, uTime * 0.3) * (1.0 - uEase);
     vec3 pos = mix(aChaos + drift, aTarget, uEase);
-    vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+    // Mouse repulsion in world space (independent of group rotation & camera
+    // parallax): push particles away from the cursor with a smooth falloff.
+    vec4 world = modelMatrix * vec4(pos, 1.0);
+    vec2 toP = world.xy - uMouse;
+    float mdist = length(toP);
+    float mfall = smoothstep(uMouseRadius, 0.0, mdist);
+    world.xy += (mdist > 1e-4 ? toP / mdist : vec2(0.0)) * mfall * uMousePush;
+    vec4 mv = viewMatrix * world;
     // Guard the perspective divide: particles that drift near or behind the
     // camera plane would otherwise blow gl_PointSize up to a screen-filling
     // quad, and with additive blending that overdraw tanks the frame rate.
@@ -89,7 +102,7 @@ const FRAG = /* glsl */ `
   }
 `
 
-export default function ParticleLattice({ mobile, progressRef, activeSection, theme }) {
+export default function ParticleLattice({ mobile, progressRef, activeSection, theme, pointerRef }) {
   const groupRef = useRef()
   const pointsRef = useRef()
   const linesRef = useRef()
@@ -191,6 +204,9 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
       uScale: { value: 500 },
       uSize: { value: mobile ? 0.085 : 0.065 },
       uOpacity: { value: 0.72 },
+      uMouse: { value: new THREE.Vector2(1e5, 1e5) },
+      uMouseRadius: { value: mobile ? 1.1 : 1.6 },
+      uMousePush: { value: mobile ? 0.5 : 0.9 },
     }),
     [mobile],
   )
@@ -275,10 +291,30 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
       groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRot, 0.02)
     }
 
-    // Gentle scroll-driven camera dolly + pointer parallax.
+    // Gentle scroll-driven camera dolly.
     state.camera.position.z = THREE.MathUtils.lerp(7.5, 6, ease)
-    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, state.pointer.x * 0.6, 0.03)
-    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, state.pointer.y * 0.4, 0.03)
+
+    // Mouse: repulsion + parallax, driven by the window-tracked pointer.
+    const ptr = pointerRef?.current
+    if (matRef.current) {
+      const um = matRef.current.uniforms.uMouse.value
+      if (ptr?.active) {
+        // Unproject the pointer onto the world z=0 plane so the repulsion point
+        // sits exactly under the cursor regardless of parallax/rotation.
+        MOUSE_NDC.set(ptr.x, ptr.y, 0.5).unproject(state.camera).sub(state.camera.position)
+        const tHit = -state.camera.position.z / MOUSE_NDC.z
+        um.set(
+          state.camera.position.x + MOUSE_NDC.x * tHit,
+          state.camera.position.y + MOUSE_NDC.y * tHit,
+        )
+      } else {
+        um.set(1e5, 1e5) // parked offscreen — no push
+      }
+    }
+    const px = ptr?.active ? ptr.x : 0
+    const py = ptr?.active ? ptr.y : 0
+    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, px * 0.5, 0.03)
+    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, py * 0.35, 0.03)
     state.camera.lookAt(0, 0, 0)
   })
 
