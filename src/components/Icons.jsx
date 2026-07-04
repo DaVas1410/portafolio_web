@@ -56,3 +56,17 @@ export const MoonIcon = (p) => (
     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
   </svg>
 )
+
+export const SparklesIcon = (p) => (
+  <svg {...base} {...p}>
+    <path d="M12 3l1.6 4.6L18 9l-4.4 1.4L12 15l-1.6-4.6L6 9l4.4-1.4L12 3z" />
+    <path d="M18 14l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7.7-2z" />
+  </svg>
+)
+
+export const MotionOffIcon = (p) => (
+  <svg {...base} {...p}>
+    <path d="M12 3l1.6 4.6L18 9l-4.4 1.4L12 15l-1.6-4.6L6 9l4.4-1.4L12 3z" />
+    <path d="M4 4l16 16" />
+  </svg>
+)

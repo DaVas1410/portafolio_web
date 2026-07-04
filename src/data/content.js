@@ -17,6 +17,11 @@ export const nav = [
   { id: 'contact', label: { en: 'Contact', es: 'Contacto' } },
 ]
 
+export const motionToggle = {
+  on: { en: 'Motion on', es: 'Movimiento activado' },
+  off: { en: 'Reduce motion', es: 'Reducir movimiento' },
+}
+
 export const hero = {
   greeting: { en: "Hi, I'm", es: 'Hola, soy' },
   name: 'Juan Vásconez',
