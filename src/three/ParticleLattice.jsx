@@ -65,7 +65,9 @@ const VERT = /* glsl */ `
     // quad, and with additive blending that overdraw tanks the frame rate.
     float depth = max(-mv.z, 0.6);
     // Per-node size (a few large hubs, most small) for graph-like hierarchy.
-    gl_PointSize = min(uSize * aSize * (uScale / depth), 24.0);
+    // Cap kept tight so no single point can spike overdraw (e.g. when the
+    // group rotation reverses and dense clusters sweep past the camera).
+    gl_PointSize = min(uSize * aSize * (uScale / depth), 16.0);
     // Depth fade: dim particles further from the camera for a sense of volume.
     vFade = 0.45 + 0.55 * smoothstep(11.0, 3.0, depth);
     gl_Position = projectionMatrix * mv;
@@ -92,7 +94,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
   const lineMatRef = useRef()
   const matRef = useRef()
 
-  const COUNT = mobile ? 450 : 900
+  const COUNT = mobile ? 700 : 1600
   // Additive glow reads well on the dark charcoal, but washes out to invisible
   // on the cream light theme — there we composite normally as colored dots.
   const dark = theme === 'dark'
@@ -101,7 +103,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
   // Build clusters, chaos cloud, per-particle cluster-target positions, the
   // color buffer, and (desktop only) precomputed retrieval edges — all once.
   const built = useMemo(() => {
-    const span = 9
+    const span = 11
     // Cluster centroids spread on a loose sphere within the span.
     const centroids = []
     for (let c = 0; c < CLUSTERS; c++) {
@@ -120,7 +122,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
     const colors = new Float32Array(COUNT * 3)
     const sizes = new Float32Array(COUNT)
     const clusterOf = new Uint8Array(COUNT)
-    const jitter = 0.9
+    const jitter = 1.15 // larger, fuller clusters
 
     for (let i = 0; i < COUNT; i++) {
       const c = i % CLUSTERS
@@ -272,7 +274,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
     }
 
     // Gentle scroll-driven camera dolly + pointer parallax.
-    state.camera.position.z = THREE.MathUtils.lerp(6, 4.5, ease)
+    state.camera.position.z = THREE.MathUtils.lerp(7.5, 6, ease)
     state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, state.pointer.x * 0.6, 0.03)
     state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, state.pointer.y * 0.4, 0.03)
     state.camera.lookAt(0, 0, 0)
