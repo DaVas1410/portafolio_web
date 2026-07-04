@@ -82,7 +82,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
   const lineMatRef = useRef()
   const matRef = useRef()
 
-  const COUNT = mobile ? 1200 : 2800
+  const COUNT = mobile ? 450 : 900
   // Additive glow reads well on the dark charcoal, but washes out to invisible
   // on the cream light theme — there we composite normally as colored dots.
   const dark = theme === 'dark'
@@ -171,7 +171,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
       uTime: { value: 0 },
       uEase: { value: 0 },
       uScale: { value: 500 },
-      uSize: { value: mobile ? 0.06 : 0.048 },
+      uSize: { value: mobile ? 0.085 : 0.065 },
       uOpacity: { value: 0.72 },
     }),
     [mobile],
@@ -210,9 +210,13 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
     // would otherwise sit at ease≈0 (a dull chaos cloud). Slowly form and
     // dissolve the clusters on their own — strongest at the top, fading out as
     // scroll drives the real morph so the two never fight.
+    // Keep the clusters mostly formed while idle (breathe between 0.35 and
+    // 0.85 instead of dissolving to a full chaos cloud). This makes the
+    // clusters + connections readable at landing AND is cheaper to draw:
+    // clustered particles cover far less screen than a fully spread cloud.
     const breath = 0.5 - 0.5 * Math.cos(t * 0.22) // 0→1 slow oscillation
-    const idle = breath * 0.55 * (1 - scrollEase)
-    const ease = Math.min(1, scrollEase + idle)
+    const idleTarget = 0.35 + breath * 0.5 // 0.35 → 0.85
+    const ease = scrollEase + (1 - scrollEase) * idleTarget
 
     // O(1) per-frame cost: the GPU vertex shader morphs every particle.
     if (matRef.current) {
@@ -235,8 +239,9 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
       }
       linesRef.current.geometry.attributes.position.needsUpdate = true
       if (lineMatRef.current) {
-        const pulse = 0.55 + 0.45 * Math.sin(t * 1.4)
-        lineMatRef.current.opacity = ease * ease * 0.3 * pulse
+        const pulse = 0.6 + 0.4 * Math.sin(t * 1.4)
+        // Visible base so the connections read at landing, growing with ease.
+        lineMatRef.current.opacity = (0.18 + ease * 0.32) * pulse
       }
     }
 
