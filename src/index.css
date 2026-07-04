@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Color system — a diverging scientific palette (cool teal/plasma <-> warm
+  amber/stellar) over blue-tinted slate neutrals evoking the interstellar
+  medium. Values are space-separated RGB triplets consumed by tailwind's
+  `rgb(var(--x) / <alpha>)` color definitions.
+*/
+:root {
+  --bg: 246 248 251;
+  --bg-elev: 255 255 255;
+  --surface: 255 255 255;
+  --border: 224 230 240;
+  --text: 15 26 38;
+  --text-muted: 78 92 110;
+  --text-faint: 130 144 162;
+  --accent: 13 148 164;      /* teal, deepened for AA contrast on light */
+  --accent-warm: 176 112 22; /* amber, deepened for light */
+  --grid: 15 26 38;          /* hairline grid tint */
+}
+
+.dark {
+  --bg: 9 13 20;
+  --bg-elev: 16 23 33;
+  --surface: 19 27 39;
+  --border: 34 45 60;
+  --text: 228 235 243;
+  --text-muted: 141 154 171;
+  --text-faint: 92 104 121;
+  --accent: 45 212 226;      /* bright plasma teal for dark */
+  --accent-warm: 243 183 92; /* warm stellar amber for dark */
+  --grid: 148 163 184;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+body {
+  @apply bg-bg text-ink font-sans antialiased;
+  font-feature-settings: 'cv05', 'ss01';
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Offset anchor targets so headings clear the sticky nav. */
+section[id] {
+  scroll-margin-top: 5rem;
+}
+
+/* Custom selection tint */
+::selection {
+  background-color: rgb(var(--accent) / 0.25);
+  color: rgb(var(--text));
+}
+
+/* Thin, theme-aware scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: rgb(var(--bg));
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--border));
+  border-radius: 999px;
+  border: 2px solid rgb(var(--bg));
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--text-faint));
+}
+
+@layer components {
+  /* Mono section index label, e.g. "01 / research" */
+  .eyebrow {
+    @apply font-mono text-xs uppercase tracking-[0.2em] text-accent;
+  }
+
+  .section-pad {
+    @apply mx-auto max-w-content px-6 py-24 sm:px-8 md:py-32;
+  }
+
+  /* Faint data-grid backdrop */
+  .grid-backdrop {
+    background-image:
+      linear-gradient(to right, rgb(var(--grid) / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(var(--grid) / 0.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  .link-underline {
+    @apply relative inline-flex items-center gap-1 text-ink transition-colors hover:text-accent;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-md border border-line bg-elev px-2 py-0.5 font-mono text-[0.7rem] text-muted;
+  }
+}
