@@ -39,11 +39,13 @@ const VERT = /* glsl */ `
   attribute vec3 aChaos;
   attribute vec3 aTarget;
   attribute vec3 aColor;
+  attribute float aSize;
   uniform float uTime;
   uniform float uEase;
   uniform float uScale;
   uniform float uSize;
   varying vec3 vColor;
+  varying float vFade;
 
   vec3 flow(vec3 p, float t) {
     return vec3(
@@ -62,7 +64,10 @@ const VERT = /* glsl */ `
     // camera plane would otherwise blow gl_PointSize up to a screen-filling
     // quad, and with additive blending that overdraw tanks the frame rate.
     float depth = max(-mv.z, 0.6);
-    gl_PointSize = min(uSize * (uScale / depth), 24.0);
+    // Per-node size (a few large hubs, most small) for graph-like hierarchy.
+    gl_PointSize = min(uSize * aSize * (uScale / depth), 24.0);
+    // Depth fade: dim particles further from the camera for a sense of volume.
+    vFade = 0.45 + 0.55 * smoothstep(11.0, 3.0, depth);
     gl_Position = projectionMatrix * mv;
   }
 `
@@ -71,11 +76,12 @@ const VERT = /* glsl */ `
 const FRAG = /* glsl */ `
   uniform float uOpacity;
   varying vec3 vColor;
+  varying float vFade;
   void main() {
     float d = length(gl_PointCoord - 0.5);
     if (d > 0.5) discard;
     float a = smoothstep(0.5, 0.05, d);
-    gl_FragColor = vec4(vColor, a * uOpacity);
+    gl_FragColor = vec4(vColor, a * uOpacity * vFade);
   }
 `
 
@@ -112,6 +118,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
     const chaos = new Float32Array(COUNT * 3)
     const target = new Float32Array(COUNT * 3)
     const colors = new Float32Array(COUNT * 3)
+    const sizes = new Float32Array(COUNT)
     const clusterOf = new Uint8Array(COUNT)
     const jitter = 0.9
 
@@ -125,6 +132,8 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
       target[ix] = centroids[c][0] + gauss() * jitter
       target[ix + 1] = centroids[c][1] + gauss() * jitter
       target[ix + 2] = centroids[c][2] + gauss() * jitter
+      // Cube-skewed: most nodes small, a scattered few noticeably larger.
+      sizes[i] = 0.65 + Math.pow(Math.random(), 3) * 2.0
     }
 
     // Retrieval edges: several query nodes per cluster, each wired to its K
@@ -141,6 +150,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
         const step = Math.max(1, Math.floor(members.length / QUERIES_PER_CLUSTER))
         for (let q = 0; q < QUERIES_PER_CLUSTER; q++) {
           const qi = members[Math.min(members.length - 1, q * step)]
+          sizes[qi] = 3.4 // query nodes are the graph's hubs — make them read
           // K nearest neighbors to the query across all particles
           const best = [] // {idx, d} kept sorted ascending, length <= K
           const qx = target[qi * 3]
@@ -167,7 +177,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
 
     const edgePositions = new Float32Array(edgePairs.length * 3)
 
-    return { chaos, target, colors, clusterOf, edgePairs, edgePositions }
+    return { chaos, target, colors, sizes, clusterOf, edgePairs, edgePositions }
   }, [COUNT, mobile])
 
   const uniforms = useMemo(
@@ -276,6 +286,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
           <bufferAttribute attach="attributes-aChaos" count={COUNT} array={built.chaos} itemSize={3} />
           <bufferAttribute attach="attributes-aTarget" count={COUNT} array={built.target} itemSize={3} />
           <bufferAttribute attach="attributes-aColor" count={COUNT} array={built.colors} itemSize={3} />
+          <bufferAttribute attach="attributes-aSize" count={COUNT} array={built.sizes} itemSize={1} />
         </bufferGeometry>
         <shaderMaterial
           ref={matRef}
