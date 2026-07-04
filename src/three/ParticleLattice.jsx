@@ -171,7 +171,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
       uTime: { value: 0 },
       uEase: { value: 0 },
       uScale: { value: 500 },
-      uSize: { value: mobile ? 0.07 : 0.055 },
+      uSize: { value: mobile ? 0.06 : 0.048 },
       uOpacity: { value: 0.72 },
     }),
     [mobile],

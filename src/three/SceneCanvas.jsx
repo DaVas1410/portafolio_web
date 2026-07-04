@@ -31,7 +31,7 @@ export default function SceneCanvas() {
     <div ref={wrapRef} aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10">
       <Suspense fallback={null}>
         <Canvas
-          dpr={[1, 1.5]}
+          dpr={1}
           gl={{ antialias: false, powerPreference: 'high-performance' }}
           camera={{ position: [0, 0, 6], fov: 60 }}
           frameloop={visible ? 'always' : 'never'}
