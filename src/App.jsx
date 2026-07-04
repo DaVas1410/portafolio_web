@@ -11,7 +11,7 @@ import SceneCanvas from './three/SceneCanvas.jsx'
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen">
       <SceneCanvas />
       <Nav />
       <main>

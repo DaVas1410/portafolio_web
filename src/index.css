@@ -111,4 +111,10 @@ section[id] {
   .badge {
     @apply inline-flex items-center rounded-md border border-line bg-elev px-2 py-0.5 font-mono text-[0.7rem] text-muted;
   }
+
+  /* Optional readability scrim usable behind dense text blocks over the canvas */
+  .scrim {
+    background: rgb(var(--bg) / 0.55);
+    backdrop-filter: blur(2px);
+  }
 }
