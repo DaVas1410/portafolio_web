@@ -3,6 +3,7 @@ import Hero from './components/Hero.jsx'
 import About from './components/About.jsx'
 import Projects from './components/Projects.jsx'
 import Research from './components/Research.jsx'
+import Publications from './components/Publications.jsx'
 import Experience from './components/Experience.jsx'
 import Skills from './components/Skills.jsx'
 import Contact from './components/Contact.jsx'
@@ -19,6 +20,7 @@ export default function App() {
         <About />
         <Projects />
         <Research />
+        <Publications />
         <Experience />
         <Skills />
         <Contact />

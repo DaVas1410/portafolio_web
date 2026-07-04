@@ -49,7 +49,7 @@ export default function Experience() {
   const revealRef = useReveal()
   return (
     <section id="experience" className="section-pad">
-      <SectionHeader index="04" eyebrow={experience.eyebrow} title={experience.title} />
+      <SectionHeader index="05" eyebrow={experience.eyebrow} title={experience.title} />
 
       <div ref={revealRef} className="reveal relative">
         {/* vertical timeline axis */}

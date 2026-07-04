@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
 const ScrollContext = createContext(null)
 
-const SECTION_IDS = ['about', 'projects', 'research', 'experience', 'skills', 'contact']
+const SECTION_IDS = ['about', 'projects', 'research', 'publications', 'experience', 'skills', 'contact']
 
 export function ScrollProvider({ children }) {
   const progressRef = useRef(0)

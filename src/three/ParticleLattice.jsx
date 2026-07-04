@@ -52,7 +52,7 @@ export default function ParticleLattice({ mobile }) {
 
   // Section -> teal(0)..amber(1) mix
   const sectionMix = useMemo(() => {
-    const order = ['about', 'projects', 'research', 'experience', 'skills', 'contact']
+    const order = ['about', 'projects', 'research', 'publications', 'experience', 'skills', 'contact']
     const idx = Math.max(0, order.indexOf(activeSection))
     return idx / (order.length - 1)
   }, [activeSection])

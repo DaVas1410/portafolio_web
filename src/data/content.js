@@ -12,6 +12,7 @@ export const nav = [
   { id: 'about', label: { en: 'About', es: 'Sobre mí' } },
   { id: 'projects', label: { en: 'Projects', es: 'Proyectos' } },
   { id: 'research', label: { en: 'Research', es: 'Investigación' } },
+  { id: 'publications', label: { en: 'Publications', es: 'Publicaciones' } },
   { id: 'experience', label: { en: 'Experience', es: 'Experiencia' } },
   { id: 'skills', label: { en: 'Skills', es: 'Skills' } },
   { id: 'contact', label: { en: 'Contact', es: 'Contacto' } },
@@ -101,6 +102,11 @@ export const research = {
   ],
   repoLabel: { en: 'Thesis repository', es: 'Repositorio de la tesis' },
   repo: 'https://github.com/DaVas1410/cnn_astro',
+}
+
+export const publicationsSection = {
+  eyebrow: { en: 'publications', es: 'publicaciones' },
+  title: { en: 'Papers & posters', es: 'Artículos y pósters' },
 }
 
 export const experience = {
