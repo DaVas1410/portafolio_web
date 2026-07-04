@@ -29,14 +29,17 @@ export default function Skills() {
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
-                {group.items.map((skill) => (
-                  <span
-                    key={skill}
-                    className="rounded-lg border border-line bg-bg px-3 py-1.5 font-mono text-sm text-muted transition-colors hover:text-ink"
-                  >
-                    {skill}
-                  </span>
-                ))}
+                {group.items.map((skill) => {
+                  const label = t(skill, lang)
+                  return (
+                    <span
+                      key={label}
+                      className="rounded-lg border border-line bg-bg px-3 py-1.5 font-mono text-sm text-muted transition-colors hover:text-ink"
+                    >
+                      {label}
+                    </span>
+                  )
+                })}
               </div>
             </div>
           )

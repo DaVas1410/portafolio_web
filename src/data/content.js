@@ -194,24 +194,48 @@ export const skills = {
   title: { en: 'Toolbox', es: 'Herramientas' },
   groups: [
     {
-      title: { en: 'Python & ML', es: 'Python & ML' },
+      title: { en: 'Programming', es: 'Programación' },
       accent: 'accent',
-      items: ['PyTorch', 'scikit-learn', 'HuggingFace', 'CNNs', 'ResNet-50 / DINOv2', 'LangChain', 'ChromaDB'],
+      items: [
+        'Python',
+        'AI & ML on Python',
+        'SQL / PostgreSQL',
+        'AI Agents',
+        'Scientific Programming',
+        'Data Analysis & Visualization',
+        'Frontend Development',
+        'Backend Development',
+      ],
     },
     {
-      title: { en: 'Computational Physics', es: 'Física computacional' },
+      title: { en: 'Tools & Technologies', es: 'Herramientas & Tecnologías' },
       accent: 'warm',
-      items: ['Numerical integration', 'Orbital dynamics', 'PINNs', 'General Relativity', 'Turbulence / fractals', 'HPC · SLURM'],
+      items: [
+        'Linux (Administration & Kernel)',
+        'Version Control (Git)',
+        'Quantum Computing (Qiskit)',
+        'Deployment',
+        'HPC Computing',
+      ],
     },
     {
-      title: { en: 'Web & Data Viz', es: 'Web & Data Viz' },
+      title: { en: 'Professional', es: 'Profesional' },
       accent: 'accent',
-      items: ['React', 'Next.js', 'TailwindCSS', 'FastAPI / Flask', 'Plotly', 'Matplotlib', 'GeoPandas / Folium'],
+      items: [
+        'Scientific Writing & Research',
+        'Process Optimization',
+        'Prompt Engineering',
+        'Content Creation',
+        'Video & Audio Editing',
+      ],
     },
     {
-      title: { en: 'Tools & Infra', es: 'Herramientas & Infra' },
+      title: { en: 'Languages', es: 'Idiomas' },
       accent: 'warm',
-      items: ['Git', 'Linux', 'Conda / uv', 'LaTeX', 'HDF5', 'Google Earth Engine'],
+      items: [
+        { en: 'English (Advanced)', es: 'Inglés (Avanzado)' },
+        { en: 'Spanish (Native)', es: 'Español (Nativo)' },
+      ],
     },
   ],
 }
