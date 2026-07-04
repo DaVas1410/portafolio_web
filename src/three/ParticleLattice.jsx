@@ -3,8 +3,8 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
 const CLUSTERS = 6
-const K = 5 // retrieval neighbors per query
-const QUERIES_PER_CLUSTER = 4 // several query nodes per cluster → denser graph
+const K = 4 // retrieval neighbors per query
+const QUERIES_PER_CLUSTER = 2 // fewer query nodes per cluster → lighter graph
 const SECTION_ORDER = ['about', 'projects', 'research', 'experience', 'skills', 'contact']
 
 // One distinct warm hue per cluster — a Claude-ish spread from terracotta
@@ -69,7 +69,7 @@ const VERT = /* glsl */ `
     // Per-node size (a few large hubs, most small) for graph-like hierarchy.
     // Cap kept tight so no single point can spike overdraw (e.g. when the
     // group rotation reverses and dense clusters sweep past the camera).
-    gl_PointSize = min(uSize * aSize * (uScale / depth), 16.0);
+    gl_PointSize = min(uSize * aSize * (uScale / depth), 13.0);
     // Depth fade: dim particles further from the camera for a sense of volume.
     vFade = 0.45 + 0.55 * smoothstep(11.0, 3.0, depth);
     gl_Position = projectionMatrix * mv;
@@ -97,7 +97,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
   const matRef = useRef()
   const frameRef = useRef(0)
 
-  const COUNT = mobile ? 550 : 1150
+  const COUNT = mobile ? 400 : 700
   // Additive glow reads well on the dark charcoal, but washes out to invisible
   // on the cream light theme — there we composite normally as colored dots.
   const dark = theme === 'dark'
@@ -190,7 +190,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
       uTime: { value: 0 },
       uEase: { value: 0 },
       uScale: { value: 500 },
-      uSize: { value: mobile ? 0.078 : 0.058 },
+      uSize: { value: mobile ? 0.07 : 0.05 },
       uOpacity: { value: 0.72 },
     }),
     [mobile],
