@@ -240,6 +240,13 @@ export const skills = {
   ],
 }
 
+export const personal = {
+  eyebrow: { en: 'leadership', es: 'liderazgo' },
+  title: { en: 'Personal work & leadership', es: 'Trabajo personal y liderazgo' },
+  toggle: { en: 'Show all', es: 'Ver todo' },
+  hide: { en: 'Hide', es: 'Ocultar' },
+}
+
 export const contact = {
   eyebrow: { en: 'contact', es: 'contacto' },
   title: { en: "Let's talk", es: 'Hablemos' },

@@ -18,7 +18,7 @@ export default function Contact() {
     <section id="contact" className="relative overflow-hidden">
       <div className="absolute inset-0 grid-backdrop opacity-40" />
       <div className="relative section-pad">
-        <SectionHeader index="07" eyebrow={contact.eyebrow} title={contact.title} />
+        <SectionHeader index="08" eyebrow={contact.eyebrow} title={contact.title} />
 
         <div ref={revealRef} className="reveal grid gap-10 md:grid-cols-[1.2fr_1fr] md:gap-16">
           <div>
