@@ -1,11 +1,13 @@
 import { useLang, t } from '../context/LangContext.jsx'
 import { about } from '../data/content.js'
+import { personalWork } from '../data/personalWork.js'
 import { useReveal } from '../hooks/useReveal.js'
 import SectionHeader from './SectionHeader.jsx'
 
 export default function About() {
   const { lang } = useLang()
   const revealRef = useReveal()
+  const communityRef = useReveal()
   return (
     <section id="about" className="section-pad">
       <SectionHeader index="01" eyebrow={about.eyebrow} title={about.title} />
@@ -29,6 +31,29 @@ export default function About() {
                 {t(f.k, lang)}
               </div>
               <div className="text-base font-medium text-ink">{t(f.v, lang)}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Community & leadership — folded in from the old Personal Work section. */}
+      <div ref={communityRef} className="reveal mt-14 border-t border-line pt-10">
+        <h3 className="mb-6 font-mono text-xs uppercase tracking-[0.2em] text-accent">
+          {lang === 'es' ? 'Comunidad y liderazgo' : 'Community & leadership'}
+        </h3>
+        <div className="grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+          {personalWork.map((col, i) => (
+            <div key={i}>
+              <div className="mb-2 font-mono text-[0.7rem] uppercase tracking-wider text-faint">
+                {t(col.group, lang)}
+              </div>
+              <ul className="space-y-1.5">
+                {col.items.map((item, j) => (
+                  <li key={j} className="text-sm leading-snug text-muted">
+                    {t(item, lang)}
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>

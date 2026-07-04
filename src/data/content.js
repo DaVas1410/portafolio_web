@@ -12,7 +12,6 @@ export const nav = [
   { id: 'about', label: { en: 'About', es: 'Sobre mí' } },
   { id: 'projects', label: { en: 'Projects', es: 'Proyectos' } },
   { id: 'research', label: { en: 'Research', es: 'Investigación' } },
-  { id: 'publications', label: { en: 'Publications', es: 'Publicaciones' } },
   { id: 'experience', label: { en: 'Experience', es: 'Experiencia' } },
   { id: 'skills', label: { en: 'Skills', es: 'Skills' } },
   { id: 'contact', label: { en: 'Contact', es: 'Contacto' } },

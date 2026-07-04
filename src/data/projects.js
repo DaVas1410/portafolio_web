@@ -17,6 +17,10 @@ export const projects = [
     stack: ['PyTorch', 'CNNs', 'ResNet-50', 'HDF5', 'SLURM'],
     repo: `${GH}/cnn_astro`,
     tag: { en: 'Thesis', es: 'Tesis' },
+    outcome: {
+      en: '~99% accuracy recovering the turbulence parameter k_min directly from synthetic interstellar-cloud images.',
+      es: '~99% de precisión recuperando el parámetro de turbulencia k_min directamente desde imágenes sintéticas del medio interestelar.',
+    },
   },
   {
     slug: 'orbits-simulation',
@@ -29,6 +33,10 @@ export const projects = [
     stack: ['Python', 'NumPy', 'SciPy', 'Matplotlib'],
     repo: `${GH}/orbits-simulation`,
     tag: null,
+    outcome: {
+      en: "Reproduces Mercury's perihelion precession from a relativistic two-body integrator.",
+      es: 'Reproduce la precesión del perihelio de Mercurio desde un integrador relativista de dos cuerpos.',
+    },
   },
   {
     slug: 'relativity_rag',
@@ -41,6 +49,10 @@ export const projects = [
     stack: ['Next.js', 'FastAPI', 'LangChain', 'ChromaDB', 'Ollama'],
     repo: `${GH}/relativity_rag`,
     tag: null,
+    outcome: {
+      en: 'A fully offline GR study agent that OCRs handwritten notes and answers in rendered LaTeX — no data leaves the machine.',
+      es: 'Un agente de estudio de RG 100% offline que hace OCR de notas manuscritas y responde en LaTeX renderizado — ningún dato sale de la máquina.',
+    },
   },
   {
     slug: 'deepsci-agent',
@@ -53,6 +65,10 @@ export const projects = [
     stack: ['Python', 'Rich', 'ChromaDB', 'NetworkX', 'llama.cpp'],
     repo: `${GH}/deepsci-agent`,
     tag: null,
+    outcome: {
+      en: 'Semantic search and citation-network graphs over 2M+ arXiv papers, running entirely local.',
+      es: 'Búsqueda semántica y grafos de redes de citación sobre 2M+ papers de arXiv, todo local.',
+    },
   },
   {
     slug: 'pinn_demo',
@@ -65,6 +81,10 @@ export const projects = [
     stack: ['PyTorch', 'Flask', 'Plotly.js', 'PINNs'],
     repo: `${GH}/pinn_demo`,
     tag: null,
+    outcome: {
+      en: "Solves Burgers' equation mesh-free in the browser, with live training-loss plots.",
+      es: 'Resuelve la ecuación de Burgers sin malla en el navegador, con plots de pérdida en vivo.',
+    },
   },
   {
     slug: 'TopoGenTech',
@@ -77,6 +97,10 @@ export const projects = [
     stack: ['Earth Engine', 'Giotto-tda', 'Ripser', 'GeoPandas', 'Next.js'],
     repo: `${GH}/TopoGenTech`,
     tag: null,
+    outcome: {
+      en: 'Flags palm-oil expansion and forest fragmentation across Ecuador using persistent homology + ML.',
+      es: 'Detecta expansión de palma y fragmentación de bosque en Ecuador usando homología persistente + ML.',
+    },
   },
   {
     slug: 'yachay_water_study',
@@ -89,6 +113,10 @@ export const projects = [
     stack: ['Python', 'NASA POWER', 'GeoPandas', 'Folium'],
     repo: `${GH}/yachay_water_study`,
     tag: null,
+    outcome: {
+      en: 'Ranks water-refill sites by solar exposure, shade, and accessibility from NASA POWER data.',
+      es: 'Clasifica ubicaciones de recarga de agua por exposición solar, sombra y accesibilidad con datos de NASA POWER.',
+    },
   },
   {
     slug: 'web_aefn',
@@ -101,5 +129,9 @@ export const projects = [
     stack: ['HTML', 'CSS', 'JavaScript'],
     repo: `${GH}/web_aefn`,
     tag: null,
+    outcome: {
+      en: 'Shipped a student-management portal for the Yachay Tech student association.',
+      es: 'Entregué un portal de gestión estudiantil para la asociación de estudiantes de Yachay Tech.',
+    },
   },
 ]

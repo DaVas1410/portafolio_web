@@ -1,5 +1,6 @@
 import { useLang, t } from '../context/LangContext.jsx'
-import { research } from '../data/content.js'
+import { research, publicationsSection } from '../data/content.js'
+import { publications } from '../data/publications.js'
 import { useReveal } from '../hooks/useReveal.js'
 import SectionHeader from './SectionHeader.jsx'
 import { ArrowUpRight } from './Icons.jsx'
@@ -7,6 +8,7 @@ import { ArrowUpRight } from './Icons.jsx'
 export default function Research() {
   const { lang } = useLang()
   const revealRef = useReveal()
+  const pubsRef = useReveal()
   return (
     <section id="research" className="relative overflow-hidden">
       {/* subtle contour-like band to set this section apart */}
@@ -66,6 +68,44 @@ export default function Research() {
               k_min · ~99% acc
             </div>
           </div>
+        </div>
+
+        {/* Papers & posters — folded in from the old Publications section. */}
+        <div ref={pubsRef} className="reveal mt-16 border-t border-line pt-10">
+          <h3 className="mb-6 font-mono text-sm uppercase tracking-[0.2em] text-accent">
+            {t(publicationsSection.title, lang)}
+          </h3>
+          <ul className="space-y-4">
+            {publications.map((p) => (
+              <li
+                key={p.slug}
+                className="group flex flex-col gap-3 rounded-2xl border border-line bg-elev p-5 transition-colors hover:border-accent/50 sm:flex-row sm:items-start sm:justify-between"
+              >
+                <div className="min-w-0">
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 font-mono text-[0.65rem] uppercase tracking-wider text-accent">
+                      {t(p.type, lang)}
+                    </span>
+                    <span className="font-mono text-xs text-faint">{t(p.venue, lang)}</span>
+                  </div>
+                  <h4 className="max-w-3xl font-display text-base font-semibold leading-snug text-ink">
+                    {t(p.title, lang)}
+                  </h4>
+                </div>
+                {p.link && (
+                  <a
+                    href={p.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex flex-none items-center gap-1.5 font-mono text-xs text-accent transition-opacity hover:opacity-80"
+                  >
+                    {lang === 'es' ? 'Ver' : 'View'}
+                    <ArrowUpRight width={14} height={14} />
+                  </a>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

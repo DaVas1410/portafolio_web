@@ -19,6 +19,7 @@
   --accent: 172 72 44;       /* deeper terracotta — ~5:1 on cream, passes AA */
   --accent-warm: 63 104 71;  /* deeper forest/sage green for AA */
   --grid: 40 37 32;          /* hairline grid tint */
+  --tint: 237 231 219;       /* warm sand band, deeper than cream for rhythm */
 }
 
 .dark {
@@ -32,6 +33,7 @@
   --accent: 224 130 96;      /* brighter terracotta for dark */
   --accent-warm: 147 189 126;/* soft sage green for dark */
   --grid: 150 143 130;
+  --tint: 23 21 19;          /* deeper charcoal band for rhythm */
 }
 
 html {
@@ -94,6 +96,22 @@ section[id] {
 
   .section-pad {
     @apply mx-auto max-w-content px-6 py-24 sm:px-8 md:py-32;
+  }
+
+  /* Full-width tinted band — breaks the transparent-over-particles rhythm to
+     give one section visual weight. Opaque so it reads as a distinct block. */
+  .section-tint {
+    background: rgb(var(--tint));
+    border-top: 1px solid rgb(var(--border) / 0.7);
+    border-bottom: 1px solid rgb(var(--border) / 0.7);
+  }
+
+  /* Intentional placeholder for project/portrait media before an image exists. */
+  .media-fallback {
+    background:
+      radial-gradient(circle at 30% 28%, rgb(var(--accent) / 0.18), transparent 60%),
+      radial-gradient(circle at 78% 82%, rgb(var(--accent-warm) / 0.16), transparent 55%),
+      rgb(var(--bg-elev));
   }
 
   /* Faint data-grid backdrop */

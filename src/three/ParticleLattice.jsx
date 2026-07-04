@@ -5,7 +5,7 @@ import * as THREE from 'three'
 const CLUSTERS = 6
 const K = 5 // retrieval neighbors per query
 const QUERIES_PER_CLUSTER = 4 // several query nodes per cluster → denser graph
-const SECTION_ORDER = ['about', 'projects', 'research', 'publications', 'experience', 'skills', 'contact']
+const SECTION_ORDER = ['about', 'projects', 'research', 'experience', 'skills', 'contact']
 
 // One distinct warm hue per cluster — a Claude-ish spread from terracotta
 // through clay, ochre, olive and sage to green. Tuned for legibility over the

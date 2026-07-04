@@ -9,7 +9,7 @@ export default function Skills() {
   const revealRef = useReveal()
   return (
     <section id="skills" className="section-pad">
-      <SectionHeader index="06" eyebrow={skills.eyebrow} title={skills.title} />
+      <SectionHeader index="05" eyebrow={skills.eyebrow} title={skills.title} />
 
       <div ref={revealRef} className="reveal grid gap-5 sm:grid-cols-2">
         {skills.groups.map((group, i) => {
