@@ -1,7 +1,6 @@
 import { useLang, t } from '../context/LangContext.jsx'
 import { hero, links } from '../data/content.js'
 import { GithubIcon, MailIcon, FileIcon, ArrowUpRight } from './Icons.jsx'
-import HeroPortrait from './HeroPortrait.jsx'
 
 export default function Hero() {
   const { lang } = useLang()
@@ -16,9 +15,8 @@ export default function Hero() {
       />
 
       <div className="relative mx-auto w-full max-w-content px-6 py-28 sm:px-8">
-        <div className="grid items-center gap-10 lg:grid-cols-[1.5fr_1fr] lg:gap-16">
-          <div className="max-w-2xl">
-            <p className="mb-5 flex items-center gap-2 font-mono text-sm text-accent animate-fade-up">
+        <div className="max-w-3xl">
+          <p className="mb-5 flex items-center gap-2 font-mono text-sm text-accent animate-fade-up">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
               {t(hero.location, lang)}
             </p>
@@ -64,11 +62,6 @@ export default function Hero() {
                 <ArrowUpRight width={14} height={14} className="opacity-60" />
               </a>
             </div>
-          </div>
-
-          <div className="animate-fade-up" style={{ animationDelay: '160ms' }}>
-            <HeroPortrait />
-          </div>
         </div>
       </div>
     </section>

@@ -10,7 +10,9 @@ const SECTION_ORDER = ['about', 'projects', 'research', 'experience', 'skills', 
 // One distinct warm hue per cluster — a Claude-ish spread from terracotta
 // through clay, ochre, olive and sage to green. Tuned for legibility over the
 // cream light background and glow on the charcoal dark background.
-const CLUSTER_HEX_LIGHT = ['#a8462a', '#9a5c2c', '#87702c', '#63722e', '#496b40', '#2c6251']
+// Light theme: uniform near-black dots (no per-cluster color) for a crisp,
+// high-contrast graph on cream.
+const CLUSTER_HEX_LIGHT = ['#1a1712', '#1a1712', '#1a1712', '#1a1712', '#1a1712', '#1a1712']
 const CLUSTER_HEX_DARK = ['#e08260', '#d69a5a', '#d8bd6f', '#b6c072', '#93bd7e', '#6fbba0']
 
 // Cheap pseudo-curl flow: offset a point by trig of its own coords + time.
@@ -215,7 +217,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
     const geo = pointsRef.current?.geometry
     if (geo?.attributes.aColor) geo.attributes.aColor.needsUpdate = true
     // Edge tint: a neutral mid-olive so links between clusters stay legible.
-    if (lineMatRef.current) lineMatRef.current.color.set(dark ? '#b0a878' : '#5f5838')
+    if (lineMatRef.current) lineMatRef.current.color.set(dark ? '#b0a878' : '#2b2823')
   }, [dark, built])
 
   useFrame((state) => {
