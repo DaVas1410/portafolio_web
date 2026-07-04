@@ -95,8 +95,9 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
   const linesRef = useRef()
   const lineMatRef = useRef()
   const matRef = useRef()
+  const frameRef = useRef(0)
 
-  const COUNT = mobile ? 700 : 1600
+  const COUNT = mobile ? 550 : 1150
   // Additive glow reads well on the dark charcoal, but washes out to invisible
   // on the cream light theme — there we composite normally as colored dots.
   const dark = theme === 'dark'
@@ -189,7 +190,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
       uTime: { value: 0 },
       uEase: { value: 0 },
       uScale: { value: 500 },
-      uSize: { value: mobile ? 0.085 : 0.065 },
+      uSize: { value: mobile ? 0.078 : 0.058 },
       uOpacity: { value: 0.72 },
     }),
     [mobile],
@@ -246,16 +247,21 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
     }
 
     // Retrieval edges follow the same morph, computed only for their endpoints.
+    // Recompute + re-upload on alternate frames only — the lines drift slowly
+    // so half-rate updates are imperceptible but save CPU + a buffer upload.
+    const frame = frameRef.current++
     const { chaos, target, edgePairs, edgePositions } = built
     if (edgePairs.length && linesRef.current) {
-      for (let e = 0; e < edgePairs.length; e++) {
-        const i = edgePairs[e] * 3
-        const [fx, fy, fz] = flow(chaos[i], chaos[i + 1], chaos[i + 2], t * 0.3)
-        edgePositions[e * 3] = THREE.MathUtils.lerp(chaos[i] + fx * (1 - ease), target[i], ease)
-        edgePositions[e * 3 + 1] = THREE.MathUtils.lerp(chaos[i + 1] + fy * (1 - ease), target[i + 1], ease)
-        edgePositions[e * 3 + 2] = THREE.MathUtils.lerp(chaos[i + 2] + fz * (1 - ease), target[i + 2], ease)
+      if ((frame & 1) === 0) {
+        for (let e = 0; e < edgePairs.length; e++) {
+          const i = edgePairs[e] * 3
+          const [fx, fy, fz] = flow(chaos[i], chaos[i + 1], chaos[i + 2], t * 0.3)
+          edgePositions[e * 3] = THREE.MathUtils.lerp(chaos[i] + fx * (1 - ease), target[i], ease)
+          edgePositions[e * 3 + 1] = THREE.MathUtils.lerp(chaos[i + 1] + fy * (1 - ease), target[i + 1], ease)
+          edgePositions[e * 3 + 2] = THREE.MathUtils.lerp(chaos[i + 2] + fz * (1 - ease), target[i + 2], ease)
+        }
+        linesRef.current.geometry.attributes.position.needsUpdate = true
       }
-      linesRef.current.geometry.attributes.position.needsUpdate = true
       if (lineMatRef.current) {
         const pulse = 0.6 + 0.4 * Math.sin(t * 1.4)
         // Fade connections in with scroll: subtle behind the hero name (where
