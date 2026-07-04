@@ -1,15 +1,17 @@
 import { useLang, t } from '../context/LangContext.jsx'
 import { skills } from '../data/content.js'
+import { useReveal } from '../hooks/useReveal.js'
 import SectionHeader from './SectionHeader.jsx'
 import { pick } from './accentStyles.js'
 
 export default function Skills() {
   const { lang } = useLang()
+  const revealRef = useReveal()
   return (
     <section id="skills" className="section-pad">
-      <SectionHeader index="05" eyebrow={skills.eyebrow} title={skills.title} />
+      <SectionHeader index="06" eyebrow={skills.eyebrow} title={skills.title} />
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div ref={revealRef} className="reveal grid gap-5 sm:grid-cols-2">
         {skills.groups.map((group, i) => {
           const a = pick(group.accent)
           return (
@@ -27,14 +29,17 @@ export default function Skills() {
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
-                {group.items.map((skill) => (
-                  <span
-                    key={skill}
-                    className="rounded-lg border border-line bg-bg px-3 py-1.5 font-mono text-sm text-muted transition-colors hover:text-ink"
-                  >
-                    {skill}
-                  </span>
-                ))}
+                {group.items.map((skill) => {
+                  const label = t(skill, lang)
+                  return (
+                    <span
+                      key={label}
+                      className="rounded-lg border border-line bg-bg px-3 py-1.5 font-mono text-sm text-muted transition-colors hover:text-ink"
+                    >
+                      {label}
+                    </span>
+                  )
+                })}
               </div>
             </div>
           )

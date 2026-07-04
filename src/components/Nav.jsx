@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLang, t } from '../context/LangContext.jsx'
 import { nav } from '../data/content.js'
-import { ThemeToggle, LangToggle } from './Toggles.jsx'
+import { ThemeToggle, LangToggle, MotionToggle } from './Toggles.jsx'
 
 export default function Nav() {
   const { lang } = useLang()
@@ -61,11 +61,13 @@ export default function Nav() {
           ))}
           <span className="mx-2 h-5 w-px bg-line" />
           <LangToggle />
+          <MotionToggle />
           <ThemeToggle />
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
           <LangToggle />
+          <MotionToggle />
           <ThemeToggle />
           <button
             type="button"

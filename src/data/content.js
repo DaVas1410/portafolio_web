@@ -12,15 +12,25 @@ export const nav = [
   { id: 'about', label: { en: 'About', es: 'Sobre mí' } },
   { id: 'projects', label: { en: 'Projects', es: 'Proyectos' } },
   { id: 'research', label: { en: 'Research', es: 'Investigación' } },
+  { id: 'publications', label: { en: 'Publications', es: 'Publicaciones' } },
   { id: 'experience', label: { en: 'Experience', es: 'Experiencia' } },
   { id: 'skills', label: { en: 'Skills', es: 'Skills' } },
   { id: 'contact', label: { en: 'Contact', es: 'Contacto' } },
 ]
 
+export const motionToggle = {
+  on: { en: 'Motion on', es: 'Movimiento activado' },
+  off: { en: 'Reduce motion', es: 'Reducir movimiento' },
+}
+
 export const hero = {
   greeting: { en: "Hi, I'm", es: 'Hola, soy' },
   name: 'Juan Vásconez',
   role: { en: 'Physics student & Data Scientist', es: 'Estudiante de física y Data Scientist' },
+  roles: {
+    en: ['Physics undergraduate', 'Data Scientist @ Diversa', 'AI for social & environmental good'],
+    es: ['Estudiante de física', 'Data Scientist @ Diversa', 'IA para el bien social y ambiental'],
+  },
   tagline: {
     en: 'I work where physics meets data and AI — from fractal turbulence in the interstellar medium to language models that serve real people.',
     es: 'Trabajo donde la física se encuentra con los datos y la IA — desde la turbulencia fractal del medio interestelar hasta modelos de lenguaje al servicio de personas reales.',
@@ -94,39 +104,87 @@ export const research = {
   repo: 'https://github.com/DaVas1410/cnn_astro',
 }
 
+export const publicationsSection = {
+  eyebrow: { en: 'publications', es: 'publicaciones' },
+  title: { en: 'Papers & posters', es: 'Artículos y pósters' },
+}
+
 export const experience = {
   eyebrow: { en: 'experience', es: 'experiencia' },
   title: { en: 'Where I put this to work', es: 'Dónde lo llevo a la práctica' },
+  diversaHeading: { en: 'Selected work at Diversa', es: 'Trabajo destacado en Diversa' },
   items: [
     {
       role: { en: 'Data Scientist', es: 'Data Scientist' },
       org: 'Diversa',
-      period: { en: 'Present', es: 'Actualidad' },
-      desc: {
-        en: 'NLP, AI governance, humanitarian technology, and data visualization. Contributed to a RAG chatbot supporting Venezuelan migrants, plus applied ML and geospatial work.',
-        es: 'NLP, gobernanza de IA, tecnología humanitaria y visualización de datos. Contribuí a un chatbot RAG para migrantes venezolanos, además de ML aplicado y trabajo geoespacial.',
-      },
+      period: { en: 'Jan 2025 – Present', es: 'Ene 2025 – Actualidad' },
       accent: 'accent',
+      bullets: [
+        {
+          en: 'Collaborate with AI experts on human-centered, environmentally-conscious solutions, from research to deployment.',
+          es: 'Colaboro con expertos en IA en soluciones centradas en las personas y conscientes del medio ambiente, de la investigación al despliegue.',
+        },
+        {
+          en: 'Build scalable Python/SQL data pipelines, AI agents, and full-stack apps with generative UI/UX.',
+          es: 'Construyo pipelines de datos escalables en Python/SQL, agentes de IA y aplicaciones full-stack con UI/UX generativa.',
+        },
+        {
+          en: 'Advocate for ethical AI and turn data into actionable insights.',
+          es: 'Promuevo la IA ética y convierto los datos en información accionable.',
+        },
+      ],
     },
     {
-      role: { en: 'Undergraduate Researcher', es: 'Investigador de pregrado' },
-      org: 'Yachay Tech University',
-      period: { en: 'Thesis', es: 'Tesis' },
-      desc: {
-        en: 'Fractal turbulence parameter prediction from synthetic interstellar-medium images using CNNs and transfer learning, supervised by Prof. Wladimir Banda-Barragán.',
-        es: 'Predicción de parámetros de turbulencia fractal a partir de imágenes sintéticas del medio interestelar usando CNNs y transfer learning, supervisada por el Prof. Wladimir Banda-Barragán.',
-      },
+      role: { en: 'Junior Data Scientist', es: 'Data Scientist Junior' },
+      org: 'Diversa',
+      period: { en: 'Jan 2024 – Jan 2025', es: 'Ene 2024 – Ene 2025' },
       accent: 'warm',
+      bullets: [
+        {
+          en: 'NLP, AI governance, humanitarian technology, and data visualization — including a RAG chatbot supporting Venezuelan migrants.',
+          es: 'NLP, gobernanza de IA, tecnología humanitaria y visualización de datos — incluyendo un chatbot RAG para migrantes venezolanos.',
+        },
+        {
+          en: 'Applied ML and geospatial analysis in support of consultancy projects.',
+          es: 'ML aplicado y análisis geoespacial en apoyo a proyectos de consultoría.',
+        },
+      ],
     },
     {
-      role: { en: 'Organizer', es: 'Organizador' },
-      org: 'Yachay Open Science Week (YOSW) 2026',
-      period: { en: '2026', es: '2026' },
-      desc: {
-        en: 'Organizing a university-wide open-science event, and active in university student government.',
-        es: 'Organizo un evento universitario de ciencia abierta, y participo activamente en el gobierno estudiantil universitario.',
-      },
+      role: { en: 'Security Systems Manager', es: 'Encargado de Sistemas de Seguridad' },
+      org: 'Orion Seguridad',
+      period: { en: '2019, 2024', es: '2019, 2024' },
       accent: 'accent',
+      bullets: [
+        {
+          en: 'Managed a 2000+ recorder camera network running on Linux servers.',
+          es: 'Gestioné una red de más de 2000 cámaras con grabadores sobre servidores Linux.',
+        },
+        {
+          en: 'Improved incident response time by 30% through better workflows and live monitoring.',
+          es: 'Mejoré el tiempo de respuesta ante incidentes en un 30% con mejores flujos de trabajo y monitoreo en vivo.',
+        },
+        {
+          en: 'Maintained Linux servers and the surveillance infrastructure.',
+          es: 'Mantuve los servidores Linux y la infraestructura de vigilancia.',
+        },
+      ],
+    },
+    {
+      role: { en: 'HS Physics & Math Tutor', es: 'Tutor de Física y Matemáticas' },
+      org: 'U.E. Salesiana Sánchez y Cifuentes',
+      period: { en: '2023', es: '2023' },
+      accent: 'warm',
+      bullets: [
+        {
+          en: 'Delivered targeted lessons with custom materials across math, chemistry, and physics.',
+          es: 'Impartí clases dirigidas con materiales propios de matemáticas, química y física.',
+        },
+        {
+          en: 'Produced measurable improvement in student scores.',
+          es: 'Logré una mejora medible en las calificaciones de los estudiantes.',
+        },
+      ],
     },
   ],
 }
@@ -136,26 +194,57 @@ export const skills = {
   title: { en: 'Toolbox', es: 'Herramientas' },
   groups: [
     {
-      title: { en: 'Python & ML', es: 'Python & ML' },
+      title: { en: 'Programming', es: 'Programación' },
       accent: 'accent',
-      items: ['PyTorch', 'scikit-learn', 'HuggingFace', 'CNNs', 'ResNet-50 / DINOv2', 'LangChain', 'ChromaDB'],
+      items: [
+        'Python',
+        'AI & ML on Python',
+        'SQL / PostgreSQL',
+        'AI Agents',
+        'Scientific Programming',
+        'Data Analysis & Visualization',
+        'Frontend Development',
+        'Backend Development',
+      ],
     },
     {
-      title: { en: 'Computational Physics', es: 'Física computacional' },
+      title: { en: 'Tools & Technologies', es: 'Herramientas & Tecnologías' },
       accent: 'warm',
-      items: ['Numerical integration', 'Orbital dynamics', 'PINNs', 'General Relativity', 'Turbulence / fractals', 'HPC · SLURM'],
+      items: [
+        'Linux (Administration & Kernel)',
+        'Version Control (Git)',
+        'Quantum Computing (Qiskit)',
+        'Deployment',
+        'HPC Computing',
+      ],
     },
     {
-      title: { en: 'Web & Data Viz', es: 'Web & Data Viz' },
+      title: { en: 'Professional', es: 'Profesional' },
       accent: 'accent',
-      items: ['React', 'Next.js', 'TailwindCSS', 'FastAPI / Flask', 'Plotly', 'Matplotlib', 'GeoPandas / Folium'],
+      items: [
+        'Scientific Writing & Research',
+        'Process Optimization',
+        'Prompt Engineering',
+        'Content Creation',
+        'Video & Audio Editing',
+      ],
     },
     {
-      title: { en: 'Tools & Infra', es: 'Herramientas & Infra' },
+      title: { en: 'Languages', es: 'Idiomas' },
       accent: 'warm',
-      items: ['Git', 'Linux', 'Conda / uv', 'LaTeX', 'HDF5', 'Google Earth Engine'],
+      items: [
+        { en: 'English (Advanced)', es: 'Inglés (Avanzado)' },
+        { en: 'Spanish (Native)', es: 'Español (Nativo)' },
+      ],
     },
   ],
+}
+
+export const personal = {
+  eyebrow: { en: 'leadership', es: 'liderazgo' },
+  title: { en: 'Personal work & leadership', es: 'Trabajo personal y liderazgo' },
+  toggle: { en: 'Show all', es: 'Ver todo' },
+  hide: { en: 'Hide', es: 'Ocultar' },
 }
 
 export const contact = {

@@ -111,4 +111,44 @@ section[id] {
   .badge {
     @apply inline-flex items-center rounded-md border border-line bg-elev px-2 py-0.5 font-mono text-[0.7rem] text-muted;
   }
+
+  /* Optional readability scrim usable behind dense text blocks over the canvas */
+  .scrim {
+    background: rgb(var(--bg) / 0.55);
+    backdrop-filter: blur(2px);
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal.revealed {
+    opacity: 1;
+    transform: none;
+  }
+
+  .tilt-card {
+    position: relative;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+  .tilt-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    background: radial-gradient(
+      circle at var(--glare-x, 50%) var(--glare-y, 50%),
+      rgb(var(--accent) / 0.14),
+      transparent 55%
+    );
+  }
+  .tilt-card:hover::after {
+    opacity: 1;
+  }
 }
