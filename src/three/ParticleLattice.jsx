@@ -209,7 +209,14 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
   useFrame((state) => {
     const t = state.clock.elapsedTime
     const p = progressRef?.current ?? 0
-    const ease = p * p * (3 - 2 * p) // smoothstep
+    const scrollEase = p * p * (3 - 2 * p) // smoothstep
+    // Autonomous idle "breathing": when the page isn't being scrolled the scene
+    // would otherwise sit at ease≈0 (a dull chaos cloud). Slowly form and
+    // dissolve the clusters on their own — strongest at the top, fading out as
+    // scroll drives the real morph so the two never fight.
+    const breath = 0.5 - 0.5 * Math.cos(t * 0.22) // 0→1 slow oscillation
+    const idle = breath * 0.55 * (1 - scrollEase)
+    const ease = Math.min(1, scrollEase + idle)
 
     // O(1) per-frame cost: the GPU vertex shader morphs every particle.
     if (matRef.current) {
@@ -241,7 +248,9 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
     // like turning the space to a new topic region.
     if (groupRef.current) {
       const idx = Math.max(0, SECTION_ORDER.indexOf(activeSection))
-      const targetRot = (idx / (SECTION_ORDER.length - 1)) * Math.PI * 0.5
+      // Section target + a slow continuous drift so the scene never fully
+      // settles into a frozen pose while idle.
+      const targetRot = (idx / (SECTION_ORDER.length - 1)) * Math.PI * 0.5 + t * 0.03
       groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRot, 0.02)
     }
 
