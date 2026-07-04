@@ -5,19 +5,19 @@ import SectionHeader from './SectionHeader.jsx'
 import { GithubIcon, ArrowUpRight } from './Icons.jsx'
 import { pick } from './accentStyles.js'
 import { useReveal } from '../hooks/useReveal.js'
+import TiltCard from './TiltCard.jsx'
 
 function ProjectCard({ p, lang }) {
   const a = pick(p.accent)
   const revealRef = useReveal()
   return (
+    <TiltCard className={`reveal rounded-2xl ${p.featured ? 'md:col-span-2' : ''}`}>
     <a
       ref={revealRef}
       href={p.repo}
       target="_blank"
       rel="noreferrer"
-      className={`reveal group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-elev p-6 transition-all duration-300 hover:-translate-y-1 ${a.hoverBorder} ${
-        p.featured ? 'md:col-span-2' : ''
-      }`}
+      className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-elev p-6 transition-colors duration-300 ${a.hoverBorder}`}
     >
       {/* top hairline that lights up on hover */}
       <span className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent to-transparent ${a.via} opacity-0 transition-opacity duration-300 group-hover:opacity-100`} />
@@ -53,6 +53,7 @@ function ProjectCard({ p, lang }) {
         ))}
       </div>
     </a>
+    </TiltCard>
   )
 }
 

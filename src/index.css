@@ -128,4 +128,27 @@ section[id] {
     opacity: 1;
     transform: none;
   }
+
+  .tilt-card {
+    position: relative;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+  .tilt-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    background: radial-gradient(
+      circle at var(--glare-x, 50%) var(--glare-y, 50%),
+      rgb(var(--accent) / 0.14),
+      transparent 55%
+    );
+  }
+  .tilt-card:hover::after {
+    opacity: 1;
+  }
 }
