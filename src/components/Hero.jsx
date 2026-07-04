@@ -3,7 +3,6 @@ import { useLang, t } from '../context/LangContext.jsx'
 import { useMotion } from '../context/MotionContext.jsx'
 import { hero, links } from '../data/content.js'
 import { GithubIcon, MailIcon, FileIcon, ArrowUpRight } from './Icons.jsx'
-import OrbitBackdrop from './OrbitBackdrop.jsx'
 
 export default function Hero() {
   const { lang } = useLang()
@@ -23,7 +22,6 @@ export default function Hero() {
   return (
     <section id="top" className="relative flex min-h-[92vh] items-center overflow-hidden">
       <div className="absolute inset-0 grid-backdrop opacity-60" />
-      <OrbitBackdrop />
 
       <div className="relative mx-auto w-full max-w-content px-6 py-28 sm:px-8">
         <div className="max-w-3xl">
