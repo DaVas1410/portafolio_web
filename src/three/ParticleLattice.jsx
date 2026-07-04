@@ -219,7 +219,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
     // clusters + connections readable at landing AND is cheaper to draw:
     // clustered particles cover far less screen than a fully spread cloud.
     const breath = 0.5 - 0.5 * Math.cos(t * 0.22) // 0→1 slow oscillation
-    const idleTarget = 0.35 + breath * 0.5 // 0.35 → 0.85
+    const idleTarget = 0.55 + breath * 0.22 // 0.55 → 0.77: steadier, mostly formed
     const ease = scrollEase + (1 - scrollEase) * idleTarget
 
     // O(1) per-frame cost: the GPU vertex shader morphs every particle.
@@ -244,8 +244,10 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
       linesRef.current.geometry.attributes.position.needsUpdate = true
       if (lineMatRef.current) {
         const pulse = 0.6 + 0.4 * Math.sin(t * 1.4)
-        // Visible base so the connections read at landing, growing with ease.
-        lineMatRef.current.opacity = (0.18 + ease * 0.32) * pulse
+        // Fade connections in with scroll: subtle behind the hero name (where
+        // mid-morph neighbors make the lines look chaotic), clear as clusters
+        // tighten further down the page.
+        lineMatRef.current.opacity = (0.05 + scrollEase * 0.4) * pulse
       }
     }
 
