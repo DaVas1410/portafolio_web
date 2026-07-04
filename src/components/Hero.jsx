@@ -8,11 +8,6 @@ export default function Hero() {
   return (
     <section id="top" className="relative flex min-h-[92vh] items-center overflow-hidden">
       <div className="absolute inset-0 grid-backdrop opacity-60" />
-      {/* Soft vignette so the portrait and copy dominate over the ambient lattice. */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{ background: 'radial-gradient(120% 85% at 50% 42%, transparent 42%, rgb(var(--bg) / 0.55) 100%)' }}
-      />
 
       <div className="relative mx-auto w-full max-w-content px-6 py-28 sm:px-8">
         <div className="max-w-3xl">
