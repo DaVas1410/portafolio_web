@@ -3,7 +3,8 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
 const CLUSTERS = 6
-const K = 6 // retrieval neighbors per query
+const K = 5 // retrieval neighbors per query
+const QUERIES_PER_CLUSTER = 4 // several query nodes per cluster → denser graph
 const SECTION_ORDER = ['about', 'projects', 'research', 'publications', 'experience', 'skills', 'contact']
 
 // One distinct warm hue per cluster — a Claude-ish spread from terracotta
@@ -81,7 +82,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
   const lineMatRef = useRef()
   const matRef = useRef()
 
-  const COUNT = mobile ? 3500 : 10000
+  const COUNT = mobile ? 1200 : 2800
   // Additive glow reads well on the dark charcoal, but washes out to invisible
   // on the cream light theme — there we composite normally as colored dots.
   const dark = theme === 'dark'
@@ -122,46 +123,41 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
       target[ix + 2] = centroids[c][2] + gauss() * jitter
     }
 
-    // Retrieval edges: one query per cluster (particle nearest its centroid),
-    // wired to its K nearest neighbors in embedding (target) space. Precompute
-    // the index pairs once — never brute-force kNN per frame.
+    // Retrieval edges: several query nodes per cluster, each wired to its K
+    // nearest neighbors in embedding (target) space, so the space reads as a
+    // connected graph rather than isolated stars. Precompute the index pairs
+    // once — never brute-force kNN per frame.
     const edgePairs = []
     if (!mobile) {
       for (let c = 0; c < CLUSTERS; c++) {
-        // query = particle in cluster c closest to the centroid
-        let qi = -1
-        let qBest = Infinity
-        for (let i = c; i < COUNT; i += CLUSTERS) {
-          const dx = target[i * 3] - centroids[c][0]
-          const dy = target[i * 3 + 1] - centroids[c][1]
-          const dz = target[i * 3 + 2] - centroids[c][2]
-          const d = dx * dx + dy * dy + dz * dz
-          if (d < qBest) {
-            qBest = d
-            qi = i
+        // Spread query nodes through the cluster by striding its members.
+        const members = []
+        for (let i = c; i < COUNT; i += CLUSTERS) members.push(i)
+        if (!members.length) continue
+        const step = Math.max(1, Math.floor(members.length / QUERIES_PER_CLUSTER))
+        for (let q = 0; q < QUERIES_PER_CLUSTER; q++) {
+          const qi = members[Math.min(members.length - 1, q * step)]
+          // K nearest neighbors to the query across all particles
+          const best = [] // {idx, d} kept sorted ascending, length <= K
+          const qx = target[qi * 3]
+          const qy = target[qi * 3 + 1]
+          const qz = target[qi * 3 + 2]
+          for (let j = 0; j < COUNT; j++) {
+            if (j === qi) continue
+            const dx = target[j * 3] - qx
+            const dy = target[j * 3 + 1] - qy
+            const dz = target[j * 3 + 2] - qz
+            const d = dx * dx + dy * dy + dz * dz
+            if (best.length < K) {
+              best.push({ idx: j, d })
+              best.sort((a, b) => a.d - b.d)
+            } else if (d < best[K - 1].d) {
+              best[K - 1] = { idx: j, d }
+              best.sort((a, b) => a.d - b.d)
+            }
           }
+          for (const nb of best) edgePairs.push(qi, nb.idx)
         }
-        if (qi < 0) continue
-        // K nearest neighbors to the query across all particles
-        const best = [] // {idx, d} kept sorted ascending, length <= K
-        const qx = target[qi * 3]
-        const qy = target[qi * 3 + 1]
-        const qz = target[qi * 3 + 2]
-        for (let j = 0; j < COUNT; j++) {
-          if (j === qi) continue
-          const dx = target[j * 3] - qx
-          const dy = target[j * 3 + 1] - qy
-          const dz = target[j * 3 + 2] - qz
-          const d = dx * dx + dy * dy + dz * dz
-          if (best.length < K) {
-            best.push({ idx: j, d })
-            best.sort((a, b) => a.d - b.d)
-          } else if (d < best[K - 1].d) {
-            best[K - 1] = { idx: j, d }
-            best.sort((a, b) => a.d - b.d)
-          }
-        }
-        for (const nb of best) edgePairs.push(qi, nb.idx)
       }
     }
 
@@ -175,7 +171,7 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
       uTime: { value: 0 },
       uEase: { value: 0 },
       uScale: { value: 500 },
-      uSize: { value: mobile ? 0.05 : 0.04 },
+      uSize: { value: mobile ? 0.07 : 0.055 },
       uOpacity: { value: 0.72 },
     }),
     [mobile],
