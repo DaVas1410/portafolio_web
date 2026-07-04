@@ -17,7 +17,7 @@
   --text-muted: 96 89 78;
   --text-faint: 144 135 121;
   --accent: 190 85 55;       /* terracotta orange, deepened for AA on cream */
-  --accent-warm: 110 112 66; /* brownie olive green */
+  --accent-warm: 79 118 85;  /* clearer forest/sage green */
   --grid: 40 37 32;          /* hairline grid tint */
 }
 
@@ -30,7 +30,7 @@
   --text-muted: 170 162 149;
   --text-faint: 114 107 96;
   --accent: 224 130 96;      /* brighter terracotta for dark */
-  --accent-warm: 176 179 122;/* soft sage / olive for dark */
+  --accent-warm: 147 189 126;/* soft sage green for dark */
   --grid: 150 143 130;
 }
 

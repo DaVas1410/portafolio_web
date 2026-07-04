@@ -6,12 +6,11 @@ const CLUSTERS = 6
 const K = 6 // retrieval neighbors per query
 const SECTION_ORDER = ['about', 'projects', 'research', 'publications', 'experience', 'skills', 'contact']
 
-// Read a CSS var "r g b" triplet from :root and return a normalized THREE.Color.
-function cssColor(name) {
-  const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
-  const [r, g, b] = raw.split(/\s+/).map(Number)
-  return new THREE.Color(r / 255, g / 255, b / 255)
-}
+// One distinct warm hue per cluster — a Claude-ish spread from terracotta
+// through clay, ochre, olive and sage to green. Tuned for legibility over the
+// cream light background and glow on the charcoal dark background.
+const CLUSTER_HEX_LIGHT = ['#c05a37', '#b3703c', '#a98a3e', '#7f8a3f', '#5f8455', '#3f7d68']
+const CLUSTER_HEX_DARK = ['#e08260', '#d69a5a', '#d8bd6f', '#b6c072', '#93bd7e', '#6fbba0']
 
 // Cheap pseudo-curl flow: offset a point by trig of its own coords + time.
 // Mirrors the GLSL `flow()` in the vertex shader so CPU-side edge endpoints
@@ -188,14 +187,12 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
   }, [dark])
 
   // Recolor per-cluster from the theme palette — once per theme change, not per
-  // frame (avoids getComputedStyle forcing layout every tick).
+  // frame (avoids getComputedStyle forcing layout every tick). Each cluster gets
+  // its own distinct warm hue (terracotta → clay → ochre → olive → sage → green)
+  // so the space reads as multi-color embedding clusters, not an orange wash.
   useEffect(() => {
-    const teal = cssColor('--accent')
-    const warm = cssColor('--accent-warm')
-    const clusterColors = []
-    for (let c = 0; c < CLUSTERS; c++) {
-      clusterColors.push(teal.clone().lerp(warm, c / (CLUSTERS - 1)))
-    }
+    const hexes = dark ? CLUSTER_HEX_DARK : CLUSTER_HEX_LIGHT
+    const clusterColors = hexes.map((h) => new THREE.Color(h))
     const { colors, clusterOf } = built
     for (let i = 0; i < colors.length / 3; i++) {
       const col = clusterColors[clusterOf[i]]
@@ -205,8 +202,9 @@ export default function ParticleLattice({ mobile, progressRef, activeSection, th
     }
     const geo = pointsRef.current?.geometry
     if (geo?.attributes.aColor) geo.attributes.aColor.needsUpdate = true
-    if (lineMatRef.current) lineMatRef.current.color.copy(teal.clone().lerp(warm, 0.5))
-  }, [theme, built])
+    // Edge tint: a neutral mid-olive so links between clusters stay legible.
+    if (lineMatRef.current) lineMatRef.current.color.set(dark ? '#b0a878' : '#7a7350')
+  }, [dark, built])
 
   useFrame((state) => {
     const t = state.clock.elapsedTime
