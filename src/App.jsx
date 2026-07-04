@@ -7,10 +7,12 @@ import Experience from './components/Experience.jsx'
 import Skills from './components/Skills.jsx'
 import Contact from './components/Contact.jsx'
 import Footer from './components/Footer.jsx'
+import SceneCanvas from './three/SceneCanvas.jsx'
 
 export default function App() {
   return (
     <div className="min-h-screen bg-bg">
+      <SceneCanvas />
       <Nav />
       <main>
         <Hero />
